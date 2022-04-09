@@ -25,3 +25,6 @@
 **Ссылка на Trello:**
 
 https://trello.com/b/aTtXpuks/aggregator-of-cryptocurrency-prices
+
+**Ссылка на макеты в Figma:**
+https://www.figma.com/file/McwkiKzXdwO1GTzlpo5Ref/Cryptocurrency-price-aggregator
