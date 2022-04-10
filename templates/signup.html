@@ -8,22 +8,26 @@
     <link rel="stylesheet" href="{{ url_for('static', path='/signup.css') }}" type="text/css"/>
 </head>
 <body>
-<h1> Create an Account </h1>
-<form>
+<div class="container">
+<form class="justify-content-center align-items-center">
+    <h1 class="title-css"> Create an Account </h1>
   <div class="form-group">
-    <label for="exampleInputEmail1">Email address</label>
-    <input type="email" class="form-control form-control-css" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      <input type="" class="form-control form-control-css" id="exampleInputUsername1" aria-describedby="usernameHelp"
+             placeholder="Username">
   </div>
   <div class="form-group">
-    <label for="exampleInputPassword1">Password</label>
+    <input type="email" class="form-control form-control-css" id="exampleInputEmail1" aria-describedby="emailHelp"
+           placeholder="Email">
+  </div>
+  <div class="form-group">
     <input type="password" class="form-control form-control-css" id="exampleInputPassword1" placeholder="Password">
   </div>
-  <div class="form-check">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary btn-primary-css">Sign up</button>
+  <small class="form-text text-muted text-muted-css">Or continue with</small>
+  <a class="form-text text-muted text-google-css"><img src="../static/images/google.svg"/>
+      Регистрация с помощью Google</a>
+  <small class="form-text text-muted text-already-acc-css">Already have an Account?<a href="#" class="login-css">Login</a></small>
 </form>
+</div>
 </body>
 </html>
