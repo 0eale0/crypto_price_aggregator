@@ -19,5 +19,10 @@ async def read_info(request: Request):
     return templates.TemplateResponse("signin.html", {'request': request})
 
 
+@app.get("/settings", response_class=HTMLResponse)
+async def read_info(request: Request):
+    return templates.TemplateResponse("settings.html", {'request': request})
+
+
 if __name__ == '__main__':
     uvicorn.run("main:app", port=8090, host="127.0.0.1", reload=True)
