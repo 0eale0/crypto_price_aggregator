@@ -1,28 +1,16 @@
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
+from app.auth.auth import sub_app
+
 
 app = FastAPI()
-app.mount('/static', StaticFiles(directory='static'), name='static')
-templates = Jinja2Templates(directory="templates")
+app.mount(path='/auth', app=sub_app)
 
 
-@app.get("/", response_class=HTMLResponse)
-async def read_info(request: Request):
-    return templates.TemplateResponse("signup.html", {'request': request})
-
-
-@app.get("/sign_in", response_class=HTMLResponse)
-async def read_info(request: Request):
-    return templates.TemplateResponse("signin.html", {'request': request})
-
-
-@app.get("/settings", response_class=HTMLResponse)
-async def read_info(request: Request):
-    return templates.TemplateResponse("settings.html", {'request': request})
+@app.get("/")
+async def read_info():
+    return {'msg': 'Hello world'}
 
 
 if __name__ == '__main__':
-    uvicorn.run("main:app", port=8090, host="127.0.0.1", reload=True)
+    uvicorn.run("main:app", port=8000, host="127.0.0.1", reload=True)
