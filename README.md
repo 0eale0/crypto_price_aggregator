@@ -29,3 +29,10 @@ https://trello.com/b/aTtXpuks/aggregator-of-cryptocurrency-prices
 **Ссылка на макеты в Figma:**
 
 https://www.figma.com/team_invite/redeem/orgamP0G9yQzTZrD01QPTm
+
+**Local setup**
+You can also install FastAPI app locally using Poetry(`pip install poetry` if you does not have Poetry).
+- `cd team-3`
+- `poetry config virtualenvs.in-project true` - create .venv in project directory
+- `poetry shell` - creates and enters to Poetry virtual environment
+- `poetry install` - installs all dependencies of FastAPI app (using `pyproject.toml` and `poetry.lock` files)
