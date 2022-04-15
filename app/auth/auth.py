@@ -12,8 +12,10 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
+
+from app.auth.schemas.user import User
 from app.auth.schemas.token import Token
-from app.auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token
+from app.auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token, get_password_hash
 
 sub_app = FastAPI()
 origins = [
@@ -41,6 +43,26 @@ oauth.register(
         'scope': 'openid email profile'
     }
 )
+
+
+@sub_app.post("/sign_up")
+def sign_up(request: Request, user_data: User):
+    try:
+        # request.data
+        """
+        проверить на exists
+        """
+        user = User(
+            username=user_data.username,
+            email=user_data.email,
+            hashed_password=get_password_hash(user_password)
+        )
+        """
+        добавили в базу
+        редирект на /
+        """
+    except:
+        pass
 
 
 @sub_app.post("/login", response_model=Token)

@@ -35,7 +35,6 @@ class User(Base):
     email = Column(Text, unique=True)
     username = Column(Text, unique=True)
     hashed_password = Column(Text)
-    # is_active = Column(Boolean, default=True)
     items = relationship("Item", back_populates="owner")
 
 

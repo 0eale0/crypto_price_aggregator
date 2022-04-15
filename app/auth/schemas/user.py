@@ -9,7 +9,7 @@ Pydantic models for validation
 class User(BaseModel):
     username: str
     email: EmailStr
-    disabled: Optional[bool] = None
+    hashed_password: str
 
     class Config:
         schema_extra = {
@@ -19,7 +19,3 @@ class User(BaseModel):
                 'disabled': True
             }
         }
-
-
-class UserInDB(User):
-    hashed_password: str
