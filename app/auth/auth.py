@@ -10,6 +10,28 @@ from auth.services.auth_helpers import fake_users_db, get_current_user, authenti
 
 sub_app = FastAPI()
 
+#TO DO: дописать
+@app.route('/login')
+async def login(request: Request):
+    """/login маршрут перенаправит нас на сайт Google для предоставления доступа"""
+    # absolute url for callback
+    # we will define it below
+    redirect_uri = request.url_for('auth')
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
+@sub_app.route('/auth_with_google')
+async def auth_with_google(request: Request):
+    """Когда вы предоставляете доступ с веб-сайта Google, Google
+     перенаправит вас обратно на указанный вами redirect_uri, а именно request.url_for('auth_with_google').
+    Этот код получит токен, который содержит access_token и id_token. id_token содержит информацию о пользователе,
+    нам просто нужно проанализировать его, чтобы получить информацию о пользователе для входа"""
+    token = await oauth.google.authorize_access_token(request)
+    # <=0.15
+    # user = await oauth.google.parse_id_token(request, token)
+    user = token['userinfo']
+    return user
+
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)):
     if current_user.disabled:
