@@ -12,8 +12,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
-from auth.schemas.token import Token
-from auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token
+from app.auth.schemas.token import Token
+from app.auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token
 
 sub_app = FastAPI()
 origins = [
@@ -72,7 +72,7 @@ async def homepage(request: Request):
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Not authorized",
         headers={"WWW-Authenticate": "Bearer"},
-            )
+    )
 
 
 @sub_app.get('/login')
