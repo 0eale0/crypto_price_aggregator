@@ -1,46 +1,54 @@
 import os
 from datetime import timedelta
+from pprint import pprint
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 
+from starlette.config import Config
+from starlette.requests import Request
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import HTMLResponse, RedirectResponse
+
+from authlib.integrations.starlette_client import OAuth, OAuthError
 from auth.schemas.token import Token
-from auth.schemas.user import User
-from auth.services.auth_helpers import fake_users_db, get_current_user, authenticate_user, \
-    create_access_token
+from auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token
 
 sub_app = FastAPI()
+origins = [
+    "http://127.0.0.1:8000/",
+    "https://127.0.0.1:8000/",
+]
+sub_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
-#TO DO: дописать
-@app.route('/login')
-async def login(request: Request):
-    """/login маршрут перенаправит нас на сайт Google для предоставления доступа"""
-    # absolute url for callback
-    # we will define it below
-    redirect_uri = request.url_for('auth')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+sub_app.add_middleware(SessionMiddleware, secret_key="!secret")
 
+config = Config('.env')
+oauth = OAuth(config)
 
-@sub_app.route('/auth_with_google')
-async def auth_with_google(request: Request):
-    """Когда вы предоставляете доступ с веб-сайта Google, Google
-     перенаправит вас обратно на указанный вами redirect_uri, а именно request.url_for('auth_with_google').
-    Этот код получит токен, который содержит access_token и id_token. id_token содержит информацию о пользователе,
-    нам просто нужно проанализировать его, чтобы получить информацию о пользователе для входа"""
-    token = await oauth.google.authorize_access_token(request)
-    # <=0.15
-    # user = await oauth.google.parse_id_token(request, token)
-    user = token['userinfo']
-    return user
-
-
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+oauth.register(
+    name='google',
+    server_metadata_url=CONF_URL,
+    client_kwargs={
+        'scope': 'openid email profile'
+    }
+)
 
 
 @sub_app.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Logins through site system
+    :return generated access_token
+    """
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -55,11 +63,47 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@sub_app.get("/users/me/", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
+@sub_app.get('/')
+async def homepage(request: Request):
+    user = request.session.get('user')
+    if user:
+        return user
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not authorized",
+        headers={"WWW-Authenticate": "Bearer"},
+            )
 
 
-@sub_app.get("/users/me/items/")
-async def read_own_items(current_user: User = Depends(get_current_active_user)):
-    return [{"item_id": "Foo", "owner": current_user.username}]
+@sub_app.get('/login')
+async def login_via_google(request: Request):
+    """
+    Calls auth callback
+    """
+    redirect_uri = request.url_for('auth')
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
+@sub_app.get('/auth')
+async def auth(request: Request):
+    """
+    Handle authentication callback\n
+    :param request: Request\n
+    :return User information from Google:
+    """
+    try:
+        user_info = await oauth.google.authorize_access_token(request)
+        pprint(user_info)
+    except OAuthError as error:
+        return HTMLResponse(f'<h1>{error.description}</h1>')
+    user = user_info.get('userinfo')
+
+    if user:
+        request.session['user'] = dict(user)
+    return RedirectResponse(url='/')
+
+
+@sub_app.get('/logout')
+async def logout(request: Request):
+    request.session.pop('user', None)
+    return RedirectResponse(url='/')
