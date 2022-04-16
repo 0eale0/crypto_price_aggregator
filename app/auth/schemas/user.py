@@ -1,15 +1,20 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from pydantic.fields import Field
 
 """
-Pydantic models for validation
+pydantic models for validation
 """
+
+
+class UserSchemaRegistration(BaseModel):
+    username: str = Field(...)
+    email: EmailStr = Field(...)
+    password: str = Field(...)
 
 
 class User(BaseModel):
-    username: str
-    email: EmailStr
-    hashed_password: str
+    username: str = Field(...)
+    email: EmailStr = Field(...)
 
     class Config:
         schema_extra = {
@@ -19,3 +24,10 @@ class User(BaseModel):
                 'disabled': True
             }
         }
+
+
+class UserInDB(User):
+    hashed_password: str
+
+
+

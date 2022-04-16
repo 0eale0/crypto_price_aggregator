@@ -13,9 +13,11 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from app.auth.schemas.user import User
-from app.auth.schemas.token import Token
-from app.auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token, get_password_hash
+from auth.schemas.user import UserSchemaRegistration, UserInDB
+from auth.schemas.token import Token
+from auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token, get_password_hash
+from auth.services.db_services import is_exists, add_user
+
 
 sub_app = FastAPI()
 origins = [
@@ -46,23 +48,29 @@ oauth.register(
 
 
 @sub_app.post("/sign_up")
-def sign_up(request: Request, user_data: User):
+def sign_up(request: Request, user_data: UserSchemaRegistration):
     try:
-        # request.data
-        """
-        проверить на exists
-        """
-        user = User(
-            username=user_data.username,
-            email=user_data.email,
-            hashed_password=get_password_hash(user_password)
-        )
-        """
-        добавили в базу
-        редирект на /
-        """
-    except:
-        pass
+        if is_exists(fake_users_db, user_data.username):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User with this username exists",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+        else:
+            "Не добавляет почему то в fake_db"
+            hashed_password = get_password_hash(user_data.password)
+            user = UserInDB(
+                username=user_data.username,
+                email=user_data.email,
+                hashed_password=hashed_password
+            )
+            print(fake_users_db)
+            add_user(fake_users_db, user)
+
+            access_token = create_access_token(data={"sub": user.username})
+            return {"access_token": access_token, "token_type": "bearer"}
+    except Exception as e:
+        return str(e)
 
 
 @sub_app.post("/login", response_model=Token)
