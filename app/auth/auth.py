@@ -13,10 +13,11 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from auth.schemas.user import UserSchemaRegistration, UserInDB
-from auth.schemas.token import Token
-from auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token, get_password_hash
-from auth.services.db_services import is_exists, add_user
+from app.auth.db import get_session
+from app.auth.schemas.user import UserSchemaRegistration, UserInDB
+from app.auth.schemas.token import Token
+from app.auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token, get_password_hash
+from app.auth.services.db_services import is_exists, add_user
 
 
 sub_app = FastAPI()
@@ -49,6 +50,7 @@ oauth.register(
 
 @sub_app.post("/sign_up")
 def sign_up(request: Request, user_data: UserSchemaRegistration):
+    # session = Depends(get_session)
     try:
         if is_exists(fake_users_db, user_data.username):
             raise HTTPException(
@@ -64,9 +66,10 @@ def sign_up(request: Request, user_data: UserSchemaRegistration):
                 email=user_data.email,
                 hashed_password=hashed_password
             )
-            print(fake_users_db)
+            # session.add(user)
+            # session.commit()
             add_user(fake_users_db, user)
-
+            print(fake_users_db)
             access_token = create_access_token(data={"sub": user.username})
             return {"access_token": access_token, "token_type": "bearer"}
     except Exception as e:

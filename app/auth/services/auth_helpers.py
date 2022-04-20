@@ -5,13 +5,13 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from auth.schemas.user import User, UserInDB, UserSchemaRegistration
-from auth.schemas.token import TokenData
+from app.auth.schemas.user import User, UserInDB, UserSchemaRegistration
+from app.auth.schemas.token import TokenData
 
 import os
 from dotenv import load_dotenv
 
-from auth.services.db_services import get_user
+from app.auth.services.db_services import get_user
 
 load_dotenv()
 
