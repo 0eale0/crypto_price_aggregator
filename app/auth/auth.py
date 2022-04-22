@@ -47,6 +47,10 @@ oauth.register(
     }
 )
 
+@sub_app.post("/register", )
+def register(request: Request, db: Session):
+
+
 
 @sub_app.post("/sign_up")
 def sign_up(request: Request, user_data: UserSchemaRegistration):
