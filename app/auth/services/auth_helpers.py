@@ -5,13 +5,13 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app.auth.schemas.user import User, UserInDB, UserSchemaRegistration
-from app.auth.schemas.token import TokenData
+from auth.schemas.user import User, UserInDB, UserSchemaRegistration
+from auth.schemas.token import TokenData
 
 import os
 from dotenv import load_dotenv
 
-from app.auth.services.db_services import get_user
+from auth.services.db_services import get_user
 
 load_dotenv()
 
@@ -41,8 +41,6 @@ def verify_password(plain_password, hashed_password):
 
 def get_password_hash(password):
     return pwd_context.hash(password)
-
-
 
 
 def authenticate_user(fake_db, username: str, password: str):

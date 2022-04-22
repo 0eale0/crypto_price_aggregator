@@ -13,11 +13,11 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from app.auth.db import get_session
-from app.auth.schemas.user import UserSchemaRegistration, UserInDB
-from app.auth.schemas.token import Token
-from app.auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token, get_password_hash
-from app.auth.services.db_services import is_exists, add_user
+from auth.db import get_session
+from auth.schemas.user import UserSchemaRegistration, UserInDB
+from auth.schemas.token import Token
+from auth.services.auth_helpers import authenticate_user, fake_users_db, create_access_token, get_password_hash
+from auth.services.db_services import is_exists, add_user
 
 
 sub_app = FastAPI()

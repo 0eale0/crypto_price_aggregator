@@ -1,5 +1,5 @@
-from app.auth.schemas.user import User, UserInDB
-from app.auth.db import SessionLocal
+from auth.schemas.user import User, UserInDB
+from auth.db import SessionLocal
 
 def get_user(db, username: str):
     if username in db:

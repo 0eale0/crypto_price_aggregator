@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-from app.auth.auth import sub_app
+from auth.auth import sub_app
 
 
 app = FastAPI()
