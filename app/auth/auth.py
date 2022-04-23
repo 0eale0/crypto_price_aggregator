@@ -126,7 +126,8 @@ async def logout(request: Request):
     request.session.pop('user', None)
     return RedirectResponse(url='/')
 
-@sub_app.get('/')
+
+@sub_app.get('/', tags=['User management'])
 async def homepage(request: Request):
     user = request.session.get('user')
     if user:

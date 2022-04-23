@@ -14,20 +14,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    },
-    "danis": {
-        "username": "danis",
-        "email": "danis@example.com",
-        "hashed_password": "$2b$12$PVPAFqrrTrmZ/Ky8JhtoSevfNpZzhLWyezCfKsc3PfcyTIHFziRLS",
-        "disabled": False
-    }
-}
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -47,8 +33,6 @@ def authenticate_user(username: str, password: str, db: Session):
     if not user or not verify_password(password, user.hashed_password):
         return False
     return user
-
-
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

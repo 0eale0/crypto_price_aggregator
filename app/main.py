@@ -9,7 +9,7 @@ app.mount(path='/auth', app=sub_app)
 
 @app.get("/")
 async def read_info():
-    return {'msg': 'Hello world'}
+    return {'msg': 'Welcome'}
 
 
 if __name__ == '__main__':

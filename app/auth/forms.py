@@ -14,3 +14,12 @@ class RegistrationForm(BaseModel):
         self.username = form.get('username')
         self.email = form.get('email')
         self.password = form.get('password')
+
+    def username_length_is_valid(self) -> bool or dict:
+        return len(self.username) >= 3
+
+    def password_length_is_valid(self):
+        return len(self.password) >= 4
+
+    def passwords_equal_is_valid(self):
+        return self.password == self.repeat_password
