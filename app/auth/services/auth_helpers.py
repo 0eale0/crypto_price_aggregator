@@ -4,16 +4,11 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from auth.schemas.user import User, UserInDB, UserSchemaRegistration
-from auth.schemas.token import TokenData
-from auth.models import User
-import auth.services.db_services as db_services
 import os
 from dotenv import load_dotenv
 from auth.services import db_services
 
 load_dotenv()
-
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

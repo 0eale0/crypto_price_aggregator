@@ -122,6 +122,17 @@ async def auth(request: Request):
     return user
 
 
+@sub_app.get("/register")
+async def register_with_google(request: Request):
+    """
+    ЗАКОНЧИТЬ
+    :param request:
+    :return:
+    """
+    redirect_uri = request.url_for('auth')
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
 @sub_app.get('/logout', tags=['User management'])
 async def logout(request: Request):
     request.session.pop('user', None)

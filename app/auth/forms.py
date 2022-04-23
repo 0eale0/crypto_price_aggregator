@@ -1,5 +1,3 @@
-from fastapi import Request
-from typing import List, Optional
 from pydantic import EmailStr, BaseModel
 
 
