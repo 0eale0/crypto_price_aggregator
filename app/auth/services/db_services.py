@@ -32,14 +32,14 @@ def find_user_by_username(username: str, db: Session) -> bool:
     user = db.query(models.User).filter(User.username == username).first()
     if user:
         return user
-    return False
+    return None
 
 
 def create_new_user(user: RegistrationForm, db: Session):
     user = User(
         email=user.email,
         username=user.username,
-        hashed_password=get_password_hash(user.password)
+        hashed_password=get_password_hash(user.password) if user.password else None
     )
     db.add(user)
     db.commit()

@@ -118,7 +118,8 @@ async def auth(request: Request):
 
     if user:
         request.session['user'] = dict(user)
-    return RedirectResponse(url='/')
+    print(user['name'])
+    return user
 
 
 @sub_app.get('/logout', tags=['User management'])
