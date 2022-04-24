@@ -14,12 +14,13 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from app.auth.services.db_services import get_session, create_new_user, change_user
+from app.auth.services.db_services import get_session, create_new_user, change_user, create_new_google_user
 from app.auth.services.db_services import find_user_by_email, find_user_by_username
 from app.auth.schemas.token import Token
 from app.auth.services.auth_helpers import authenticate_user, create_access_token, get_password_hash
 from sqlalchemy.orm import Session
-from .forms import RegistrationForm, ChangeDataForm
+from .forms import RegistrationForm, ChangeDataForm, GoogleRegistrationForm
+from .models import GoogleUser
 
 sub_app = FastAPI()
 origins = [
@@ -83,23 +84,37 @@ async def login_via_google(request: Request):
 
 
 @sub_app.get('/auth', tags=['User management'])
-async def auth(request: Request):
+async def auth(request: Request, db: Session = Depends(get_session)):
     """
     Handle authentication callback\n
+    :param db:
     :param request: Request\n
     :return User information from Google:
     """
-    try:
-        user_info = await oauth.google.authorize_access_token(request)
-        pprint(user_info)
-    except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.description}</h1>')
-    user = user_info.get('userinfo')
 
-    if user:
-        request.session['user'] = dict(user)
-    print(user['name'])
-    return user
+    try:
+        full_user_info = await oauth.google.authorize_access_token(request)
+    except OAuthError as error:
+        print("HERERHEHRHRRE")
+        return HTMLResponse(f'<h1>{error.description}</h1>')
+    short_user_info = full_user_info.get('userinfo')
+
+    if short_user_info:
+        name = short_user_info['name']
+        email = short_user_info['email']
+
+        user = db.query(GoogleUser).filter(GoogleUser.email == email).first()
+
+        if not user:
+            user_form = GoogleRegistrationForm(email=email, name=name)
+
+            user = create_new_google_user(user_form, db)
+
+        request.session['user'] = dict(short_user_info)
+
+        return user
+
+    return None
 
 
 @sub_app.post("/login", response_model=Token, tags=['User management'])

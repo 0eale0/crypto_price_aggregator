@@ -23,6 +23,16 @@ class RegistrationForm(BaseModel):
         return self.password == self.repeat_password
 
 
+class GoogleRegistrationForm(BaseModel):
+    name: str
+    email: EmailStr
+
+    async def load_data(self):
+        form = await self.request.form()
+        self.name = form.get('name')
+        self.email = form.get('email')
+
+
 class ChangeDataForm(BaseModel):
     username: str
     new_username: str

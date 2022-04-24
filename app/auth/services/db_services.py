@@ -1,4 +1,4 @@
-from app.auth.forms import RegistrationForm, ChangeDataForm
+from app.auth.forms import RegistrationForm, ChangeDataForm, GoogleRegistrationForm
 from app.auth.models import User
 
 from sqlalchemy.orm import Session
@@ -41,6 +41,18 @@ def create_new_user(user: RegistrationForm, db: Session):
         username=user.username,
         hashed_password=get_password_hash(user.password) if user.password else None
     )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def create_new_google_user(user: GoogleRegistrationForm, db: Session):
+    email = user.email
+    name = user.name
+
+    user = models.GoogleUser(email=email, name=name)
+
     db.add(user)
     db.commit()
     db.refresh(user)
