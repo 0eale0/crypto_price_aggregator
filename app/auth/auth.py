@@ -95,7 +95,6 @@ async def auth(request: Request, db: Session = Depends(get_session)):
     try:
         full_user_info = await oauth.google.authorize_access_token(request)
     except OAuthError as error:
-        print("HERERHEHRHRRE")
         return HTMLResponse(f'<h1>{error.description}</h1>')
     short_user_info = full_user_info.get('userinfo')
 
