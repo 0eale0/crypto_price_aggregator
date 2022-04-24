@@ -1,4 +1,3 @@
-import enum
 import os
 from datetime import timedelta
 from pprint import pprint
@@ -17,7 +16,7 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 from app.auth.services.db_services import get_session, create_new_user, change_user
 from app.auth.services.db_services import find_user_by_email, find_user_by_username
 from app.auth.schemas.token import Token
-from app.auth.services.auth_helpers import authenticate_user, create_access_token, get_password_hash
+from app.auth.services.auth_helpers import authenticate_user, create_access_token
 from sqlalchemy.orm import Session
 from .forms import RegistrationForm, ChangeDataForm
 
@@ -106,7 +105,8 @@ async def auth(request: Request):
 async def login_for_access_token(request: Request, db: Session = Depends(get_session),
                                  form_data: OAuth2PasswordRequestForm = Depends()):
     """
-    Logins through site system
+    Logins through site system,
+    Saves user credentials in session to have access for homepage
     :return generated access_token
     """
     user = authenticate_user(form_data.username, form_data.password, db)
@@ -116,16 +116,14 @@ async def login_for_access_token(request: Request, db: Session = Depends(get_ses
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    dictionary = dict()
-    dictionary['username'] = user.username
-    dictionary['email'] = user.email
-    dictionary['hashed_password'] = user.hashed_password
-    request.session['user'] = dictionary
-    print(request.session['user'])
+
+    request.session['user'] = user.dumps()
+
     access_token_expires = timedelta(minutes=int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')))
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
+    request.session['token'] = access_token
     return {"access_token": access_token, "token_type": "bearer"}
 
 

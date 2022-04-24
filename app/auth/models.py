@@ -15,5 +15,11 @@ class User(Base):
     username = Column(Text, unique=True)
     hashed_password = Column(Text)
 
+    def dumps(self):
+        return {
+            "email": self.email,
+            "username": self.username
+        }
+
 
 Base.metadata.create_all(engine)
