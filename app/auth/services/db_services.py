@@ -1,13 +1,13 @@
-from auth.forms import RegistrationForm
-from auth.models import User
+from app.auth.forms import RegistrationForm, ChangeDataForm
+from app.auth.models import User
 
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from auth.local_configs import Configuration
-from auth.schemas.user import UserInDB
-from auth.services.auth_helpers import get_password_hash
-import auth.models as models
+from app.auth.local_configs import Configuration
+from app.auth.schemas.user import UserInDB
+from app.auth.services.auth_helpers import get_password_hash
+import app.auth.models as models
 
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -42,6 +42,20 @@ def create_new_user(user: RegistrationForm, db: Session):
         hashed_password=get_password_hash(user.password) if user.password else None
     )
     db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def change_user(current_user, new_user: ChangeDataForm, db: Session):
+    user = db.query(models.User).filter(User.username == current_user['username']).first()
+    if new_user.username != "":
+        user.username = new_user.new_username
+        db.commit()
+    if new_user.new_password != "":
+        user.hashed_password = get_password_hash(new_user.new_password)
+        db.commit()
+    print(user)
     db.commit()
     db.refresh(user)
     return user

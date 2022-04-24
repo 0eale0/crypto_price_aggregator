@@ -14,12 +14,12 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from auth.services.db_services import get_session, create_new_user
-from auth.services.db_services import find_user_by_email, find_user_by_username
-from auth.schemas.token import Token
-from auth.services.auth_helpers import authenticate_user, create_access_token, get_password_hash
+from app.auth.services.db_services import get_session, create_new_user, change_user
+from app.auth.services.db_services import find_user_by_email, find_user_by_username
+from app.auth.schemas.token import Token
+from app.auth.services.auth_helpers import authenticate_user, create_access_token, get_password_hash
 from sqlalchemy.orm import Session
-from .forms import RegistrationForm
+from .forms import RegistrationForm, ChangeDataForm
 
 sub_app = FastAPI()
 origins = [
@@ -73,26 +73,6 @@ async def register(form: RegistrationForm, db: Session = Depends(get_session)):
         return str(e)
 
 
-@sub_app.post("/login", response_model=Token, tags=['User management'])
-async def login_for_access_token(db: Session = Depends(get_session), form_data: OAuth2PasswordRequestForm = Depends()):
-    """
-    Logins through site system
-    :return generated access_token
-    """
-    user = authenticate_user(form_data.username, form_data.password, db)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')))
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
 @sub_app.get('/login', tags=['User management'])
 async def login_via_google(request: Request):
     """
@@ -122,6 +102,33 @@ async def auth(request: Request):
     return user
 
 
+@sub_app.post("/login", response_model=Token, tags=['User management'])
+async def login_for_access_token(request: Request, db: Session = Depends(get_session),
+                                 form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Logins through site system
+    :return generated access_token
+    """
+    user = authenticate_user(form_data.username, form_data.password, db)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    dictionary = dict()
+    dictionary['username'] = user.username
+    dictionary['email'] = user.email
+    dictionary['hashed_password'] = user.hashed_password
+    request.session['user'] = dictionary
+    print(request.session['user'])
+    access_token_expires = timedelta(minutes=int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')))
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
 @sub_app.get("/register")
 async def register_with_google(request: Request):
     """
@@ -131,6 +138,23 @@ async def register_with_google(request: Request):
     """
     redirect_uri = request.url_for('auth')
     return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
+@sub_app.post("/change_data")
+async def change_data(request: Request, form: ChangeDataForm, db: Session = Depends(get_session)):
+    try:
+        user = request.session.get('user')
+        if user:
+            changed_user = change_user(user, form, db)
+            # request.session['user'] = changed_user
+            return changed_user
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authorized",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except Exception as e:
+        return str(e)
 
 
 @sub_app.get('/logout', tags=['User management'])
