@@ -39,11 +39,11 @@ from auth.schemas.user import UserInDB
 from auth.services.auth_helpers import get_password_hash
 
 
-def create_new_user(user: RegistrationForm, db: Session):
+def create_new_user(user: RegistrationForm, db: Session, is_google=False):
     user = User(
         email=user.email,
         username=user.username,
-        hashed_password=get_password_hash(user.password) if user.password else None
+        hashed_password=get_password_hash(user.password) if not is_google else None
     )
     db.add(user)
     db.commit()

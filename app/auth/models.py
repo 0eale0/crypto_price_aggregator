@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Text, Integer
+from sqlalchemy import Column, Text, Integer, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from .local_configs import Configuration
 from sqlalchemy import create_engine
@@ -14,6 +14,7 @@ class User(Base):
     email = Column(Text, unique=True)
     username = Column(Text, unique=True)
     hashed_password = Column(Text)
+    is_google = Column(Boolean)
 
 
 class GoogleUser(Base):

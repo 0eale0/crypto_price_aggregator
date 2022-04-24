@@ -20,7 +20,7 @@ from app.auth.schemas.token import Token
 from app.auth.services.auth_helpers import authenticate_user, create_access_token
 from sqlalchemy.orm import Session
 from .forms import RegistrationForm, ChangeDataForm, GoogleRegistrationForm
-from .models import GoogleUser
+from .models import GoogleUser, User
 
 sub_app = FastAPI()
 origins = [
@@ -87,12 +87,12 @@ async def auth(request: Request, db: Session = Depends(get_session)):
         name = short_user_info['name']
         email = short_user_info['email']
 
-        user = db.query(GoogleUser).filter(GoogleUser.email == email).first()
+        user = db.query(User).filter(User.email == email).first()
 
         if not user:
-            user_form = GoogleRegistrationForm(email=email, name=name)
+            user_form = User(email=email, username=name)
 
-            user = create_new_google_user(user_form, db)
+            user = create_new_user(user_form, db, is_google=True)
 
         request.session['user'] = dict(short_user_info)
 
