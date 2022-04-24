@@ -6,6 +6,7 @@ from pprint import pprint
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.exc import IntegrityError
 
 from starlette.config import Config
 from starlette.requests import Request
@@ -15,9 +16,8 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
 from app.auth.services.db_services import get_session, create_new_user, change_user, create_new_google_user
-from app.auth.services.db_services import find_user_by_email, find_user_by_username
 from app.auth.schemas.token import Token
-from app.auth.services.auth_helpers import authenticate_user, create_access_token, get_password_hash
+from app.auth.services.auth_helpers import authenticate_user, create_access_token
 from sqlalchemy.orm import Session
 from .forms import RegistrationForm, ChangeDataForm, GoogleRegistrationForm
 from .models import GoogleUser
@@ -53,25 +53,10 @@ oauth.register(
 @sub_app.post("/register", tags=['User management'])
 async def register(form: RegistrationForm, db: Session = Depends(get_session)):
     try:
-        if find_user_by_username(form.username, db) and find_user_by_email(form.email, db):
-            return {'message': f"User with such email and username exists"}
-        elif find_user_by_email(form.email, db):
-            return {'message': f"User with {form.email} email exists"}
-        elif find_user_by_username(form.username, db):
-            return {'message': f"User with {form.username} username exists"}
-        else:
-            if not form.username_length_is_valid():
-                return {"message": "Username should be at least 3 symbols"}
-            elif not form.password_length_is_valid():
-                return {"message": "Password length should be at least 4 symbols"}
-            elif not form.passwords_equal_is_valid():
-                return {"message": "Check passwords"}
-            else:
-                user = create_new_user(form, db)
-                return user
-
-    except Exception as e:
-        return str(e)
+        user = create_new_user(form, db)
+        return user
+    except IntegrityError as e:
+        return HTMLResponse("This email or username already exists")
 
 
 @sub_app.get('/login', tags=['User management'])

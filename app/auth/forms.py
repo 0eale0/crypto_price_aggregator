@@ -1,4 +1,4 @@
-from pydantic import EmailStr, BaseModel
+from pydantic import EmailStr, BaseModel, ValidationError, validator
 
 
 class RegistrationForm(BaseModel):
@@ -13,14 +13,24 @@ class RegistrationForm(BaseModel):
         self.email = form.get('email')
         self.password = form.get('password')
 
-    def username_length_is_valid(self) -> bool or dict:
-        return len(self.username) >= 3
+    @validator('username')
+    def check_username(cls, v):
+        if not len(v) >= 3:
+            raise ValueError('Username should be at least 3 symbols')
 
-    def password_length_is_valid(self):
-        return len(self.password) >= 4
+        return v.title()
 
-    def passwords_equal_is_valid(self):
-        return self.password == self.repeat_password
+    @validator('password')
+    def password_len(cls, v, values, **kwargs):
+        if not len(v) >= 4:
+            raise ValueError('Password length should be at least 4 symbols')
+        return v
+
+    @validator('repeat_password')
+    def passwords_match(cls, v, values, **kwargs):
+        if 'password' in values and v != values['password']:
+            raise ValueError('passwords do not match')
+        return v
 
 
 class GoogleRegistrationForm(BaseModel):
