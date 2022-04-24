@@ -142,18 +142,6 @@ async def login_for_access_token(request: Request, db: Session = Depends(get_ses
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-
-@sub_app.get("/register")
-async def register_with_google(request: Request):
-    """
-    ЗАКОНЧИТЬ
-    :param request:
-    :return:
-    """
-    redirect_uri = request.url_for('auth')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
-
-
 @sub_app.post("/change_data")
 async def change_data(request: Request, form: ChangeDataForm, db: Session = Depends(get_session)):
     try:
