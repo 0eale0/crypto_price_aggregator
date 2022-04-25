@@ -1,12 +1,20 @@
-from kucoin.client import Client
+import requests
+import json
+import datetime
+from binance_api import binance_cryptocurrencies_usdt_price
 
-api_key = '456789io'
-api_secret = '456y7u8i'
-api_passphrase = '23456789io'
-
-client = Client(api_key, api_secret, api_passphrase)
-lst_currency_name = []
-print(client.get_currencies())
-# for i in range(len(client.get_currencies())):
-#     lst_currency_name.append(client.get_currencies()[i]['name'])
-# print(lst_currency_name)
+dict_crypto_price = dict()
+lst_crypto_name = []
+url = 'https://api.kucoin.com'
+# response = requests.get(bubble_api_json_url)
+# crypto_json_name = response.json()
+result = binance_cryptocurrencies_usdt_price()
+for i in range(len(result)):
+    lst_crypto_name.append(result[i]["symbol"][:-4])
+for i in lst_crypto_name:
+    try:
+        # print(client.get_exchange_rates(currency=i))
+        dict_crypto_price[i] = requests.get(url + f'/api/v1/market/orderbook/level1?symbol={i}' + '-USDT').json()["data"]["price"]
+    except:
+        continue
+print(dict_crypto_price)
