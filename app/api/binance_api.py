@@ -16,4 +16,4 @@ def binance_cryptocurrencies_usdt_price() -> list:
     return list(filter(lambda x: max(x['price']), result))
 
 
-print(binance_cryptocurrencies_usdt_price())
+# print(binance_cryptocurrencies_usdt_price())
