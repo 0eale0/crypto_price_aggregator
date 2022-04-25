@@ -1,7 +1,7 @@
 from binance.client import Client
 
 
-def cryptocurrencies_usdt_price() -> list:
+def binance_cryptocurrencies_usdt_price() -> list:
     """
     Возвращает отсортированные пары по цене в долларах от большего к меньшему
     """
@@ -14,3 +14,6 @@ def cryptocurrencies_usdt_price() -> list:
         else:
             continue
     return list(filter(lambda x: max(x['price']), result))
+
+
+print(binance_cryptocurrencies_usdt_price())
