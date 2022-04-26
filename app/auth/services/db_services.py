@@ -53,7 +53,7 @@ def change_user(current_user, new_user: ChangeDataForm, db: Session):
 
     if new_user.username:
         user.username = new_user.username
-    if new_user.password:
+    if new_user.password and not user.is_google:
         user.hashed_password = get_password_hash(new_user.password)
 
     db.commit()
