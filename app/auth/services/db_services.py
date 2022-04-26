@@ -1,8 +1,13 @@
-from fastapi import Depends
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from app.auth.local_configs import Configuration
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
+
 from auth import models
+from auth.forms import RegistrationForm, ChangeDataForm
+from auth.models import User
+from auth.schemas.user import UserInDB
+from auth.services.auth_helpers import get_password_hash
+from app.auth.local_configs import Configuration
 
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -30,20 +35,12 @@ def find_user_by_username(username: str, db: Session) -> bool:
     return None
 
 
-from sqlalchemy.orm import Session
-
-from auth import models
-from auth.forms import RegistrationForm, GoogleRegistrationForm, ChangeDataForm
-from auth.models import User
-from auth.schemas.user import UserInDB
-from auth.services.auth_helpers import get_password_hash
-
-
 def create_new_user(user: RegistrationForm, db: Session, is_google=False):
     user = User(
         email=user.email,
         username=user.username,
-        hashed_password=get_password_hash(user.password) if not is_google else None
+        hashed_password=get_password_hash(user.password) if not is_google else None,
+        is_google=is_google,
     )
     db.add(user)
     db.commit()
@@ -51,27 +48,14 @@ def create_new_user(user: RegistrationForm, db: Session, is_google=False):
     return user
 
 
-def create_new_google_user(user: GoogleRegistrationForm, db: Session):
-    email = user.email
-    name = user.name
-
-    user = models.GoogleUser(email=email, name=name)
-
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
-
-
 def change_user(current_user, new_user: ChangeDataForm, db: Session):
-    user = db.query(models.User).filter(User.username == current_user['username']).first()
-    if new_user.username != "":
-        user.username = new_user.new_username
-        db.commit()
-    if new_user.new_password != "":
-        user.hashed_password = get_password_hash(new_user.new_password)
-        db.commit()
-    print(user)
+    user = db.query(models.User).filter(User.username == current_user["username"]).first()
+
+    if new_user.username:
+        user.username = new_user.username
+    if new_user.password:
+        user.hashed_password = get_password_hash(new_user.password)
+
     db.commit()
     db.refresh(user)
     return user

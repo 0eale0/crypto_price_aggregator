@@ -17,11 +17,4 @@ class User(Base):
     is_google = Column(Boolean)
 
 
-class GoogleUser(Base):
-    __tablename__ = "google_users"
-    id = Column(Integer, primary_key=True)
-    email = Column(Text, unique=True)
-    name = Column(Text)
-
-
 Base.metadata.create_all(engine)

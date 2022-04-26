@@ -1,12 +1,12 @@
-import enum
 import os
 from datetime import timedelta
-from pprint import pprint
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from starlette.config import Config
 from starlette.requests import Request
@@ -15,12 +15,12 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from app.auth.services.db_services import get_session, create_new_user, change_user, create_new_google_user
+
+from app.auth.services.db_services import get_session, create_new_user, change_user
 from app.auth.schemas.token import Token
 from app.auth.services.auth_helpers import authenticate_user, create_access_token
-from sqlalchemy.orm import Session
-from .forms import RegistrationForm, ChangeDataForm, GoogleRegistrationForm
-from .models import GoogleUser, User
+from .forms import RegistrationForm, ChangeDataForm
+from .models import User
 
 sub_app = FastAPI()
 origins = [
@@ -28,47 +28,37 @@ origins = [
     "https://127.0.0.1:8000/",
 ]
 sub_app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
+    CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
 )
 
 sub_app.add_middleware(SessionMiddleware, secret_key="!secret")
 
-config = Config('.env')
+config = Config(".env")
 oauth = OAuth(config)
 
-CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
-oauth.register(
-    name='google',
-    server_metadata_url=CONF_URL,
-    client_kwargs={
-        'scope': 'openid email profile'
-    }
-)
+CONF_URL = "https://accounts.google.com/.well-known/openid-configuration"
+oauth.register(name="google", server_metadata_url=CONF_URL, client_kwargs={"scope": "openid email profile"})
 
 
-@sub_app.post("/register", tags=['User management'])
+@sub_app.post("/register", tags=["User management"])
 async def register(form: RegistrationForm, db: Session = Depends(get_session)):
     try:
         user = create_new_user(form, db)
-        return user
+        return HTMLResponse(content="User is created", status_code=200)
     except IntegrityError as e:
         return HTMLResponse("This email or username already exists")
 
 
-@sub_app.get('/login', tags=['User management'])
+@sub_app.get("/login", tags=["User management"])
 async def login_via_google(request: Request):
     """
     Calls auth callback
     """
-    redirect_uri = request.url_for('auth')
+    redirect_uri = request.url_for("auth")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@sub_app.get('/auth', tags=['User management'])
+@sub_app.get("/auth", tags=["User management"])
 async def auth(request: Request, db: Session = Depends(get_session)):
     """
     Handle authentication callback\n
@@ -80,12 +70,12 @@ async def auth(request: Request, db: Session = Depends(get_session)):
     try:
         full_user_info = await oauth.google.authorize_access_token(request)
     except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.description}</h1>')
-    short_user_info = full_user_info.get('userinfo')
+        return HTMLResponse(f"<h1>{error.description}</h1>")
+    short_user_info = full_user_info.get("userinfo")
 
     if short_user_info:
-        name = short_user_info['name']
-        email = short_user_info['email']
+        name = short_user_info["name"]
+        email = short_user_info["email"]
 
         user = db.query(User).filter(User.email == email).first()
 
@@ -94,16 +84,17 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
             user = create_new_user(user_form, db, is_google=True)
 
-        request.session['user'] = dict(short_user_info)
+        request.session["user"] = dict(short_user_info)
 
         return user
 
     return None
 
 
-@sub_app.post("/login", response_model=Token, tags=['User management'])
-async def login_for_access_token(request: Request, db: Session = Depends(get_session),
-                                 form_data: OAuth2PasswordRequestForm = Depends()):
+@sub_app.post("/login", response_model=Token, tags=["User management"])
+async def login_for_access_token(
+    request: Request, db: Session = Depends(get_session), form_data: OAuth2PasswordRequestForm = Depends()
+):
     """
     Logins through site system
     :return generated access_token
@@ -116,21 +107,20 @@ async def login_for_access_token(request: Request, db: Session = Depends(get_ses
             headers={"WWW-Authenticate": "Bearer"},
         )
     dictionary = dict()
-    dictionary['username'] = user.username
-    dictionary['email'] = user.email
-    dictionary['hashed_password'] = user.hashed_password
-    request.session['user'] = dictionary
-    print(request.session['user'])
-    access_token_expires = timedelta(minutes=int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')))
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
+    dictionary["username"] = user.username
+    dictionary["email"] = user.email
+    dictionary["hashed_password"] = user.hashed_password
+    request.session["user"] = dictionary
+    print(request.session["user"])
+    access_token_expires = timedelta(minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")))
+    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 @sub_app.post("/change_data")
 async def change_data(request: Request, form: ChangeDataForm, db: Session = Depends(get_session)):
     try:
-        user = request.session.get('user')
+        user = request.session.get("user")
         if user:
             changed_user = change_user(user, form, db)
             # request.session['user'] = changed_user
@@ -144,15 +134,15 @@ async def change_data(request: Request, form: ChangeDataForm, db: Session = Depe
         return str(e)
 
 
-@sub_app.get('/logout', tags=['User management'])
+@sub_app.get("/logout", tags=["User management"])
 async def logout(request: Request):
-    request.session.pop('user', None)
-    return RedirectResponse(url='/')
+    request.session.pop("user", None)
+    return RedirectResponse(url="/")
 
 
-@sub_app.get('/', tags=['User management'])
+@sub_app.get("/", tags=["User management"])
 async def homepage(request: Request):
-    user = request.session.get('user')
+    user = request.session.get("user")
     if user:
         return user
     raise HTTPException(

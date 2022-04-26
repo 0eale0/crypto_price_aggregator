@@ -17,17 +17,8 @@ class User(BaseModel):
     email: EmailStr = Field(...)
 
     class Config:
-        schema_extra = {
-            "example": {
-                "username": "string",
-                "email": "your_email@gmail.com",
-                'disabled': True
-            }
-        }
+        schema_extra = {"example": {"username": "string", "email": "your_email@gmail.com", "disabled": True}}
 
 
 class UserInDB(User):
     hashed_password: str
-
-
-
