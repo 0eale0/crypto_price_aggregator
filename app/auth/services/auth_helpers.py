@@ -39,3 +39,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, os.environ.get("SECRET_KEY"), algorithm=os.environ.get("ALGORITHM"))
     return encoded_jwt
+
+
+def get_dict_for_session(user):
+    result = {"username": user.username,
+              "email": user.email,
+              "hashed_password": user.hashed_password}
+
+    return result
