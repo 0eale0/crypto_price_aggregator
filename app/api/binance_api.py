@@ -16,4 +16,12 @@ def binance_cryptocurrencies_usdt_price() -> list:
     return list(filter(lambda x: max(x['price']), result))
 
 
+def get_binance_coins_names():
+    names = []
+    result = binance_cryptocurrencies_usdt_price()
+    for coin in result:
+        names.append(coin["symbol"][:-4])
+    return names
+
+# print(get_binance_coins_names())
 # print(binance_cryptocurrencies_usdt_price())
