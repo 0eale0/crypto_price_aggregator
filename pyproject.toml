@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "team-3"
+version = "0.1.0"
+description = ""
+authors = ["eale <RUSLIKPVP@yandex.ru>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+uvicorn = {extras = ["standard"], version = "^0.17.6"}
+fastapi = "^0.75.2"
+psycopg2 = "^2.9.3"
+python-jose = "^3.3.0"
+pydantic = {extras = ["email"], version = "^1.9.0"}
+itsdangerous = "^2.1.2"
+Authlib = "^1.0.1"
+httpx = "^0.22.0"
+SQLAlchemy = "^1.4.35"
+passlib = "^1.7.4"
+python-multipart = "^0.0.5"
+bcrypt = "^3.2.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
