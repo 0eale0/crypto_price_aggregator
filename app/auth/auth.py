@@ -87,18 +87,16 @@ async def auth(request: Request, db: Session = Depends(get_session)):
         email = short_user_info["email"]
 
         user = db.query(User).filter(User.email == email).first()
-
-        dict_for_session = {"username": user.username,
-                            "email": user.email,
-                            "hashed_password": user.hashed_password}
-
         if not user:
             user_form = User(email=email, username=name)
 
             user = create_new_user(user_form, db, is_google=True)
 
-        request.session["user"] = dict_for_session
-
+        request.session["user"] = dict(short_user_info)
+        dictionary = dict()
+        dictionary["username"] = name
+        dictionary["email"] = email
+        request.session["user"] = dictionary
         return user
 
     return None
@@ -119,12 +117,11 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    dict_for_session = {"username": user.username,
-                        "email": user.email,
-                        "hashed_password": user.hashed_password}
-
-    request.session["user"] = dict_for_session
-    print(request.session["user"])
+    dictionary = dict()
+    dictionary["username"] = user.username
+    dictionary["email"] = user.email
+    dictionary["hashed_password"] = user.hashed_password
+    request.session["user"] = dictionary
     access_token_expires = timedelta(minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")))
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
