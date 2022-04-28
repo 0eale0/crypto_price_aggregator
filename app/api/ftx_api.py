@@ -7,7 +7,7 @@ import time
 async def cryptocurrencies_usdt_price(name: str):
     start = time.time()
     """
-    Возвращает список монет с их именем и ценой, которые есть и на coinbase, и на binance
+    Возвращает список монет с их именем и ценой, которые есть и на ftx, и на binance
     """
     res = []
     try:
