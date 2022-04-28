@@ -27,7 +27,11 @@ origins = [
     "https://127.0.0.1:8000/",
 ]
 sub_app.add_middleware(
-    CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 sub_app.add_middleware(SessionMiddleware, secret_key="!secret")
@@ -36,7 +40,11 @@ config = Config(".env")
 oauth = OAuth(config)
 
 CONF_URL = "https://accounts.google.com/.well-known/openid-configuration"
-oauth.register(name="google", server_metadata_url=CONF_URL, client_kwargs={"scope": "openid email profile"})
+oauth.register(
+    name="google",
+    server_metadata_url=CONF_URL,
+    client_kwargs={"scope": "openid email profile"},
+)
 
 
 @sub_app.post("/register", tags=["User management"])
@@ -63,7 +71,7 @@ async def register_with_google(request: Request):
     :param request:
     :return:
     """
-    redirect_uri = request.url_for('auth')
+    redirect_uri = request.url_for("auth")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
@@ -104,7 +112,9 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
 @sub_app.post("/login", response_model=Token, tags=["User management"])
 async def login_for_access_token(
-        request: Request, db: Session = Depends(get_session), form_data: OAuth2PasswordRequestForm = Depends()
+    request: Request,
+    db: Session = Depends(get_session),
+    form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     """
     Logins through site system
@@ -122,13 +132,19 @@ async def login_for_access_token(
     dictionary["email"] = user.email
     dictionary["hashed_password"] = user.hashed_password
     request.session["user"] = dictionary
-    access_token_expires = timedelta(minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")))
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    access_token_expires = timedelta(
+        minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    )
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @sub_app.post("/change_data")
-async def change_data(request: Request, form: ChangeDataForm, db: Session = Depends(get_session)):
+async def change_data(
+    request: Request, form: ChangeDataForm, db: Session = Depends(get_session)
+):
     try:
         user = request.session.get("user")
         if user:

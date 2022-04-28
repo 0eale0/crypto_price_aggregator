@@ -49,7 +49,9 @@ def create_new_user(user: RegistrationForm, db: Session, is_google=False):
 
 
 def change_user(current_user, new_user: ChangeDataForm, db: Session):
-    user = db.query(models.User).filter(User.username == current_user["username"]).first()
+    user = (
+        db.query(models.User).filter(User.username == current_user["username"]).first()
+    )
 
     if new_user.username and not user.is_google:
         user.username = new_user.username
