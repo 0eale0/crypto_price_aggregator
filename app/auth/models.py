@@ -17,4 +17,4 @@ class User(Base):
     is_google = Column(Boolean)
 
 
-Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)
