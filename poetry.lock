@@ -91,6 +91,14 @@ python-versions = "*"
 cryptography = ">=3.2"
 
 [[package]]
+name = "binance"
+version = "0.3"
+description = "Binance API wrapper"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "certifi"
 version = "2021.10.8"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -791,7 +799,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "a35916e073e73cef898e7758953d17ec58f6b76aae2143b06c7b315b52e8e7ec"
+content-hash = "e80ffedab9d400078851cd0c33fd40ad020ace2d2cd0a6c67f80769c7c79dfbc"
 
 [metadata.files]
 aiohttp = [
@@ -891,6 +899,9 @@ attrs = [
 authlib = [
     {file = "Authlib-1.0.1-py2.py3-none-any.whl", hash = "sha256:1286e2d5ef5bfe5a11cc2d0a0d1031f0393f6ce4d61f5121cfe87fa0054e98bd"},
     {file = "Authlib-1.0.1.tar.gz", hash = "sha256:6e74a4846ac36dfc882b3cc2fbd3d9eb410a627f2f2dc11771276655345223b1"},
+]
+binance = [
+    {file = "binance-0.3-py2.py3-none-any.whl", hash = "sha256:9bdcfac96a5c2713f8a018d9f19a21317bf25ab5f9e12a542d8a6f08f73189c9"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},

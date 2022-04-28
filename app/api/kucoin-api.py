@@ -17,7 +17,7 @@ async def kucoin_prices(name: str):
                     url + f'/api/v1/market/orderbook/level1?symbol={name}-USDT') as response:
                 json = await response.json()
                 data = json["data"]
-                coin_info = {"name": name, "price": data['price']}
+                coin_info = {"name": name, "price": float(data['price'])}
                 res.append(coin_info)
                 return coin_info
     except Exception:

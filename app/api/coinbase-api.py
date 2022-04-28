@@ -12,15 +12,16 @@ async def cryptocurrencies_usdt_price(name: str):
     res = []
     try:
         async with aiohttp.ClientSession() as session:
-            url = 'https://api.exchange.coinbase.com/products/'
+            url = 'https://ftx.com/api/markets/'
             async with session.get(
-                    url + f'{name}-USDT/ticker') as response:
+                    url + f'{name}/USDT') as response:
                 json = await response.json()
-                coin_info = {"name": name, "price": json['price']}
+                result = json["result"]
+                coin_info = {"name": name, "price": result['price']}
                 res.append(coin_info)
                 return coin_info
     except Exception:
-        return name
+        return None
 
 
 async def main():
@@ -33,4 +34,8 @@ async def main():
 
 
 if __name__ == '__main__':
-    print(asyncio.run(main()))
+    loop = asyncio.new_event_loop()
+    res = list(filter(None, loop.run_until_complete(main())))
+    print(res)
+    loop.close()
+
