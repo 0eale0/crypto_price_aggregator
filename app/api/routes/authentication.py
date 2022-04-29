@@ -34,7 +34,7 @@ oauth.register(
 )
 
 
-@router.post("/register", tags=["User management"])
+@router.post("/register")
 async def register(form: RegistrationForm, db: Session = Depends(get_session)):
     try:
         user = create_new_user(form, db)
@@ -43,7 +43,7 @@ async def register(form: RegistrationForm, db: Session = Depends(get_session)):
         return HTMLResponse("This email or username already exists")
 
 
-@router.get("/login", tags=["User management"])
+@router.get("/login")
 async def login_via_google(request: Request):
     """
     Calls api callback
@@ -62,7 +62,7 @@ async def register_with_google(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@router.get("/api", tags=["User management"])
+@router.get("/api")
 async def auth(request: Request, db: Session = Depends(get_session)):
     """
     Handle authentication callback\n
@@ -93,7 +93,7 @@ async def auth(request: Request, db: Session = Depends(get_session)):
     return None
 
 
-@router.post("/login", response_model=Token, tags=["User management"])
+@router.post("/login", response_model=Token)
 async def login_for_access_token(
         request: Request,
         db: Session = Depends(get_session),
@@ -140,13 +140,13 @@ async def change_data(
         return str(e)
 
 
-@router.get("/logout", tags=["User management"])
+@router.get("/logout")
 async def logout(request: Request):
     request.session.pop("user", None)
     return RedirectResponse(url="/")
 
 
-@router.get("/", tags=["User management"])
+@router.get("/")
 async def homepage(request: Request):
     user = request.session.get("user")
     if user:
