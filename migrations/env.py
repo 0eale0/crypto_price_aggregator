@@ -1,11 +1,10 @@
-from os import environ
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from app.auth.models import Base
+from models.domain.users import Base
 from dotenv import load_dotenv
-from app.auth.local_configs import Configuration
+from core.config import Configuration
 from alembic import context
 
 load_dotenv()

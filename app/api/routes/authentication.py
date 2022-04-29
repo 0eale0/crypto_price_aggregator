@@ -15,11 +15,11 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from app.auth.services.db_services import get_session, create_new_user, change_user
-from app.auth.schemas.token import Token
-from app.auth.services import auth_helpers
-from .forms import RegistrationForm, ChangeDataForm
-from .models import User
+from app.api.services.db_services import get_session, create_new_user, change_user
+from models.schemas.tokens import Token
+from app.api.services import auth_helpers
+from models.forms.users import RegistrationForm, ChangeDataForm
+from models.domain.users import User
 
 sub_app = FastAPI()
 origins = [
@@ -59,9 +59,9 @@ async def register(form: RegistrationForm, db: Session = Depends(get_session)):
 @sub_app.get("/login", tags=["User management"])
 async def login_via_google(request: Request):
     """
-    Calls auth callback
+    Calls api callback
     """
-    redirect_uri = request.url_for("auth")
+    redirect_uri = request.url_for("api")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
@@ -71,11 +71,11 @@ async def register_with_google(request: Request):
     :param request:
     :return:
     """
-    redirect_uri = request.url_for("auth")
+    redirect_uri = request.url_for("api")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@sub_app.get("/auth", tags=["User management"])
+@sub_app.get("/api", tags=["User management"])
 async def auth(request: Request, db: Session = Depends(get_session)):
     """
     Handle authentication callback\n
