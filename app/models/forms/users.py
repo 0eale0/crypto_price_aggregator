@@ -24,6 +24,7 @@ class RegistrationForm(BaseModel):
 
     async def load_data(self):
         form = await self.request.form()
+        print(form)
         self.username = form.get("username")
         self.email = form.get("email")
         self.password = form.get("password")

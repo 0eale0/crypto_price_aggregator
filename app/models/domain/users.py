@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Text, Integer, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from .local_configs import Configuration
+from core.config import Configuration
 from sqlalchemy import create_engine
 
 
@@ -15,6 +15,12 @@ class User(Base):
     username = Column(Text, unique=True)
     hashed_password = Column(Text)
     is_google = Column(Boolean)
+
+    def dumps(self):
+        result = {"username": self.username,
+                  "email": self.email}
+
+        return result
 
 
 # Base.metadata.create_all(engine)
