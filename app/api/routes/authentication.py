@@ -1,7 +1,7 @@
 import os
 from datetime import timedelta
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,20 +21,7 @@ from app.api.services import auth_helpers
 from models.forms.users import RegistrationForm, ChangeDataForm
 from models.domain.users import User
 
-sub_app = FastAPI()
-origins = [
-    "http://127.0.0.1:8000/",
-    "https://127.0.0.1:8000/",
-]
-sub_app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-sub_app.add_middleware(SessionMiddleware, secret_key="!secret")
+router = APIRouter()
 
 config = Config(".env")
 oauth = OAuth(config)
@@ -47,7 +34,7 @@ oauth.register(
 )
 
 
-@sub_app.post("/register", tags=["User management"])
+@router.post("/register", tags=["User management"])
 async def register(form: RegistrationForm, db: Session = Depends(get_session)):
     try:
         user = create_new_user(form, db)
@@ -56,7 +43,7 @@ async def register(form: RegistrationForm, db: Session = Depends(get_session)):
         return HTMLResponse("This email or username already exists")
 
 
-@sub_app.get("/login", tags=["User management"])
+@router.get("/login", tags=["User management"])
 async def login_via_google(request: Request):
     """
     Calls api callback
@@ -65,7 +52,7 @@ async def login_via_google(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@sub_app.get("/register")
+@router.get("/register")
 async def register_with_google(request: Request):
     """
     :param request:
@@ -75,7 +62,7 @@ async def register_with_google(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@sub_app.get("/api", tags=["User management"])
+@router.get("/api", tags=["User management"])
 async def auth(request: Request, db: Session = Depends(get_session)):
     """
     Handle authentication callback\n
@@ -106,7 +93,7 @@ async def auth(request: Request, db: Session = Depends(get_session)):
     return None
 
 
-@sub_app.post("/login", response_model=Token, tags=["User management"])
+@router.post("/login", response_model=Token, tags=["User management"])
 async def login_for_access_token(
         request: Request,
         db: Session = Depends(get_session),
@@ -134,7 +121,7 @@ async def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@sub_app.post("/change_data")
+@router.post("/change_data")
 async def change_data(
         request: Request, form: ChangeDataForm, db: Session = Depends(get_session)
 ):
@@ -153,13 +140,13 @@ async def change_data(
         return str(e)
 
 
-@sub_app.get("/logout", tags=["User management"])
+@router.get("/logout", tags=["User management"])
 async def logout(request: Request):
     request.session.pop("user", None)
     return RedirectResponse(url="/")
 
 
-@sub_app.get("/", tags=["User management"])
+@router.get("/", tags=["User management"])
 async def homepage(request: Request):
     user = request.session.get("user")
     if user:

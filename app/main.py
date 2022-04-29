@@ -1,10 +1,34 @@
 import uvicorn
 from fastapi import FastAPI
-from api.routes.authentication import sub_app
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from api.routes.api import router as api_router
 
 
-app = FastAPI()
-app.mount(path="/api", app=sub_app)
+def get_application() -> FastAPI:
+    app = FastAPI()
+
+    origins = [
+        "http://127.0.0.1:8000/",
+        "https://127.0.0.1:8000/",
+    ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    app.add_middleware(SessionMiddleware, secret_key="!secret")
+
+    app.include_router(api_router)
+
+    return app
+
+
+app = get_application()
 
 
 @app.get("/")
