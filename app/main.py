@@ -1,10 +1,10 @@
 import uvicorn
 from fastapi import FastAPI
-from auth.auth import sub_app
+from api.routes.authentication import sub_app
 
 
 app = FastAPI()
-app.mount(path="/auth", app=sub_app)
+app.mount(path="/api", app=sub_app)
 
 
 @app.get("/")
