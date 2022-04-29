@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Text, Integer
+from sqlalchemy import Column, Text, Integer, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from core.config import Configuration
 from sqlalchemy import create_engine
@@ -14,12 +14,13 @@ class User(Base):
     email = Column(Text, unique=True)
     username = Column(Text, unique=True)
     hashed_password = Column(Text)
+    is_google = Column(Boolean)
 
     def dumps(self):
-        return {
-            "email": self.email,
-            "username": self.username
-        }
+        result = {"username": self.username,
+                  "email": self.email}
+
+        return result
 
 
-Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)

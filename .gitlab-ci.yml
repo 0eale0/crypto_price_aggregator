@@ -1,0 +1,14 @@
+image: python:3.10
+
+stages:
+  - lint
+
+before_script:
+  - pip install poetry==1.1.11
+  - poetry config virtualenvs.create false
+  - poetry install
+
+lint:
+  stage: lint
+  script:
+    - black . --check --diff

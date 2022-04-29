@@ -9,4 +9,4 @@ class Configuration:
     # "postgresql+psycopg2://postgres:03082002@localhost:5432/database2"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     DEBUG = True
-    SECRET_KEY = 'ekjhrkgwkhjsdghkt'
+    SECRET_KEY = "ekjhrkgwkhjsdghkt"
