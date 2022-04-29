@@ -36,6 +36,7 @@ def find_user_by_username(username: str, db: Session) -> bool:
 
 
 def create_new_user(user: RegistrationForm, db: Session, is_google=False):
+    print(user.username)
     user = User(
         email=user.email,
         username=user.username,

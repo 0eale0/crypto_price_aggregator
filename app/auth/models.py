@@ -16,5 +16,11 @@ class User(Base):
     hashed_password = Column(Text)
     is_google = Column(Boolean)
 
+    def dumps(self):
+        result = {"username": self.username,
+                  "email": self.email}
+
+        return result
+
 
 # Base.metadata.create_all(engine)
