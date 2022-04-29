@@ -21,14 +21,14 @@ def get_session():
 
 
 def find_user_by_email(email: str, db: Session) -> bool:
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(User).filter(User.email == email).first()
     if user:
         return user
     return False
 
 
 def find_user_by_username(username: str, db: Session) -> bool:
-    user = db.query(models.User).filter(models.User.username == username).first()
+    user = db.query(User).filter(User.username == username).first()
     if user:
         return user
     return None
@@ -50,7 +50,7 @@ def create_new_user(user: RegistrationForm, db: Session, is_google=False):
 
 def change_user(current_user, new_user: ChangeDataForm, db: Session):
     user = (
-        db.query(models.User).filter(User.username == current_user["username"]).first()
+        db.query(User).filter(User.username == current_user["username"]).first()
     )
 
     if new_user.username and not user.is_google:

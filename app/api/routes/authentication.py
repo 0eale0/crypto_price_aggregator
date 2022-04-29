@@ -1,16 +1,14 @@
 import os
 from datetime import timedelta
 
-from fastapi import Depends, FastAPI, HTTPException, status, APIRouter
+from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.middleware.cors import CORSMiddleware
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
@@ -48,7 +46,8 @@ async def login_via_google(request: Request):
     """
     Calls api callback
     """
-    redirect_uri = request.url_for("api")
+    redirect_uri = request.url_for("auth")
+    print(redirect_uri)
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
@@ -58,11 +57,11 @@ async def register_with_google(request: Request):
     :param request:
     :return:
     """
-    redirect_uri = request.url_for("api")
+    redirect_uri = request.url_for("auth")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@router.get("/api")
+@router.get("/google")
 async def auth(request: Request, db: Session = Depends(get_session)):
     """
     Handle authentication callback\n
