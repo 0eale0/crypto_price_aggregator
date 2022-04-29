@@ -13,12 +13,12 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from app.auth.services.db_services import get_session, create_new_user, change_user
-from app.auth.services.db_services import find_user_by_email, find_user_by_username
-from app.auth.schemas.token import Token
-from app.auth.services.auth_helpers import authenticate_user, create_access_token
+from api.services.db_services import get_session, create_new_user, change_user
+from api.services.db_services import find_user_by_email, find_user_by_username
+from models.schemas.tokens import Token
+from api.services.auth_helpers import authenticate_user, create_access_token
 from sqlalchemy.orm import Session
-from .forms import RegistrationForm, ChangeDataForm
+from models.forms.users import RegistrationForm, ChangeDataForm
 
 sub_app = FastAPI()
 origins = [

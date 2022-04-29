@@ -1,13 +1,13 @@
-from app.auth.forms import RegistrationForm, ChangeDataForm
-from app.auth.models import User
+from models.forms.users import RegistrationForm, ChangeDataForm
+from models.domain.users import User
 
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.auth.local_configs import Configuration
-from app.auth.schemas.user import UserInDB
-from app.auth.services.auth_helpers import get_password_hash
-import app.auth.models as models
+from core.config import Configuration
+from models.schemas.users import UserInDB
+from api.services.auth_helpers import get_password_hash
+import models.domain.users as models
 
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

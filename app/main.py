@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-from auth.auth import sub_app
+from api.routes.authentication import sub_app
 
 
 app = FastAPI()

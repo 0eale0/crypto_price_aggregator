@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Text, Integer
 from sqlalchemy.ext.declarative import declarative_base
-from .local_configs import Configuration
+from core.config import Configuration
 from sqlalchemy import create_engine
 
 

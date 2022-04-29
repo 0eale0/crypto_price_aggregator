@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 import os
 from dotenv import load_dotenv
-from app.auth.services import db_services
+from api.services import db_services
 
 load_dotenv()
 
