@@ -3,11 +3,11 @@ import asyncio
 import aiohttp
 
 from api.crypto_sites.binance_api import get_binance_coins_names
-from app.api.crypto_sites.base_class import CryptoSiteApi
+from app.api.crypto_sites.base_classes import CryptoSiteApi
 
 
 class FTX(CryptoSiteApi):
-    async def get_coin_price(self, name: str):
+    async def get_coin_price_from_api(self, name: str):
         res = []
         try:
             async with aiohttp.ClientSession() as session:
@@ -22,20 +22,23 @@ class FTX(CryptoSiteApi):
         except Exception:
             return None
 
-    async def __get_coin_prices(self):
+    async def __get_coin_prices_from_api(self):
         names = get_binance_coins_names()  # We should get it from db
         tasks = []
         for name in names:
-            task = self.get_coin_price(name)
+            task = self.get_coin_price_from_api(name)
             tasks.append(task)
         return await asyncio.gather(*tasks)
 
-    async def get_coin_prices(self):
-        res = list(filter(None, await self.__get_coin_prices()))
+    async def get_coin_prices_from_api(self):
+        res = list(filter(None, await self.__get_coin_prices_from_api()))
 
         return res
 
     def save_in_db(self, result):
+        pass
+
+    def get_coin_prices_from_db(self):
         pass
 
 
@@ -43,7 +46,7 @@ async def main():
     names = get_binance_coins_names()
     ftx = FTX()
 
-    print(await ftx.get_coin_prices())
+    print(await ftx.get_coin_prices_from_api())
 
 
 if __name__ == '__main__':
