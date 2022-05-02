@@ -23,6 +23,3 @@ def get_binance_coins_names():
     for coin in result:
         names.append(coin["symbol"][:-4])
     return names
-
-# print(get_binance_coins_names())
-# print(binance_cryptocurrencies_usdt_price())
