@@ -1,10 +1,17 @@
 from typing import List
 
 import uvicorn
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, APIRouter
 from fastapi.responses import HTMLResponse
+from fastapi_utils.tasks import repeat_every
+from sqlalchemy.orm import Session
+
+from app.api.services.observer_for_crypto_prices import crypto_api
+from app.models.domain import users
+from models.domain.users import Exchange
 
 app = FastAPI()
+router = APIRouter()
 
 html = """
 <!DOCTYPE html>
@@ -66,15 +73,41 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@app.get("/")
+@router.on_event("startup")
+@repeat_every(seconds=int(300))
+async def update_db():
+    await crypto_api.update_coin_prices()
+    result = crypto_api.get_coin_prices()
+    await manager.broadcast(result)
+
+
+@router.get("/crypto")
 async def get():
     return HTMLResponse(html)
 
 
-@app.websocket("/ws/{client_id}")
+@router.post("/test")
+def test():
+    model_exchange = users.Exchange
+    model_exchange_info = {"name": "ftx", "year_established": "text?", "url": "fff.com",
+                           "country": "Russia", "image_url": "kkk.com", "trust_score": 5}
+
+    model_crypto = users.Cryptocurrency
+    model_crypto_info = {'name': 'DOGE', 'price': 0.128062, 'exchange_id': 1}
+
+    session = users.session()
+    exchange_id = session.query(Exchange).filter_by(name="ftx").one().id
+    print(exchange_id)
+    with session as sess:
+        exchange = model_crypto(**model_crypto_info)
+        sess.add(exchange)
+
+        sess.commit()
+
+
+@router.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket)
-    await manager.send_personal_message()
     try:
         while True:
             data = await websocket.receive_text()
