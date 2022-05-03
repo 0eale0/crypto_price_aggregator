@@ -5,15 +5,16 @@ from sqlalchemy import (
     Boolean,
     String,
     ForeignKey,
-    CheckConstraint,
+    CheckConstraint, Float,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from core.config import Configuration
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, backref, sessionmaker
 
 Base = declarative_base()
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)
+session = sessionmaker(bind=engine)
 
 
 class User(Base):
@@ -29,10 +30,10 @@ class User(Base):
         backref=backref("users_fav_crypto", lazy="joined"),
     )
     posts = relationship(
-        "Posts", lazy="select", backref=backref("posts", lazy="joined")
+        "Post", lazy="select", backref=backref("posts", lazy="joined")
     )
     likes = relationship(
-        "Likes", lazy="select", backref=backref("likes", lazy="joined")
+        "Like", lazy="select", backref=backref("likes", lazy="joined")
     )
 
     def dumps(self):
@@ -67,14 +68,14 @@ class Cryptocurrency(Base):
     symbol = Column(Text, unique=True)
     image_url = Column(Text)
     exchange_id = Column(Integer, ForeignKey("exchanges.id"))
-    price = Column(Integer, CheckConstraint("price > 0", name="positive_price"))
+    price = Column(Float, CheckConstraint("price > 0", name="positive_price"))
 
 
 class UserFavouriteCrypto(Base):
     __tablename__ = "users_favourite_cryptos"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Text, ForeignKey("users.id"))
-    coin_id = Column(Text, ForeignKey("cryptocurrencies.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    coin_id = Column(Integer, ForeignKey("cryptocurrencies.id"))
 
 
 class Post(Base):
@@ -87,7 +88,7 @@ class Post(Base):
     data = Column(Text)
     image = Column(Text)
 
-    likes = relationship("Likes", lazy="select", backref=backref("like", lazy="joined"))
+    likes = relationship("Like", lazy="select", backref=backref("like", lazy="joined"))
     posts_comments = relationship("PostsComment", lazy="select", backref=backref("posts_comments", lazy="joined"))
 
 
@@ -108,6 +109,9 @@ class Like(Base):
 class PostsComment(Base):
     __tablename__ = "posts_comments"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("posts.user_id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
     post_id = Column(Integer, ForeignKey("posts.id"))
     data = Column(String(100))
+
+
+Base.metadata.create_all(engine)

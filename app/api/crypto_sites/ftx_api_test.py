@@ -4,9 +4,12 @@ import aiohttp
 
 from api.crypto_sites.binance_api import get_binance_coins_names
 from app.api.crypto_sites.base_classes import CryptoSiteApi
+from models.domain.users import Exchange
 
 
 class FTX(CryptoSiteApi):
+    name = "ftx"
+
     async def get_coin_price_from_api(self, name: str):
         res = []
         try:
@@ -22,7 +25,7 @@ class FTX(CryptoSiteApi):
         except Exception:
             return None
 
-    async def __get_coin_prices_from_api(self):
+    async def _get_coin_prices_from_api(self):
         names = get_binance_coins_names()  # We should get it from db
         tasks = []
         for name in names:
@@ -31,12 +34,9 @@ class FTX(CryptoSiteApi):
         return await asyncio.gather(*tasks)
 
     async def get_coin_prices_from_api(self):
-        res = list(filter(None, await self.__get_coin_prices_from_api()))
+        res = list(filter(None, await self._get_coin_prices_from_api()))
 
         return res
-
-    def save_in_db(self, result):
-        pass
 
     def get_coin_prices_from_db(self):
         pass
