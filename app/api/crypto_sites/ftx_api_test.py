@@ -40,10 +40,9 @@ class FTX(CryptoSiteApi):
 
 
 async def main():
-    names = get_binance_coins_names()
     ftx = FTX()
 
-    print(await ftx.get_coin_prices())
+    await ftx.get_coin_prices()
 
 
 if __name__ == '__main__':
