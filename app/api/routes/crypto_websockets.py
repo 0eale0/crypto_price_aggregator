@@ -89,11 +89,17 @@ async def get():
 @router.post("/test")
 def test():
     model_exchange = users.Exchange
-    model_exchange_info = {"name": "ftx", "year_established": "text?", "url": "fff.com",
-                           "country": "Russia", "image_url": "kkk.com", "trust_score": 5}
+    model_exchange_info = {
+        "name": "ftx",
+        "year_established": "text?",
+        "url": "fff.com",
+        "country": "Russia",
+        "image_url": "kkk.com",
+        "trust_score": 5,
+    }
 
     model_crypto = users.Cryptocurrency
-    model_crypto_info = {'name': 'DOGE', 'price': 0.128062, 'exchange_id': 1}
+    model_crypto_info = {"name": "DOGE", "price": 0.128062, "exchange_id": 1}
 
     session = users.session()
     exchange_id = session.query(Exchange).filter_by(name="ftx").one().id

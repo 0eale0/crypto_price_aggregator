@@ -14,12 +14,11 @@ class FTX(CryptoSiteApi):
         res = []
         try:
             async with aiohttp.ClientSession() as session:
-                url = 'https://ftx.com/api/markets/'
-                async with session.get(
-                        url + f'{name}/USDT') as response:
+                url = "https://ftx.com/api/markets/"
+                async with session.get(url + f"{name}/USDT") as response:
                     json = await response.json()
                     result = json["result"]
-                    coin_info = {"name": name, "price": result['price']}
+                    coin_info = {"name": name, "price": result["price"]}
                     res.append(coin_info)
                     return coin_info
         except Exception:
@@ -49,5 +48,5 @@ async def main():
     print(await ftx.get_coin_prices_from_api())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

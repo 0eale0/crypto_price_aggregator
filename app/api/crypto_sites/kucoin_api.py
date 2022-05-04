@@ -12,17 +12,17 @@ async def kucoin_prices(name: str):
     res = []
     try:
         async with aiohttp.ClientSession() as session:
-            url = 'https://api.kucoin.com'
+            url = "https://api.kucoin.com"
             async with session.get(
-                    url + f'/api/v1/market/orderbook/level1?symbol={name}-USDT') as response:
+                url + f"/api/v1/market/orderbook/level1?symbol={name}-USDT"
+            ) as response:
                 json = await response.json()
                 data = json["data"]
-                coin_info = {"name": name, "price": float(data['price'])}
+                coin_info = {"name": name, "price": float(data["price"])}
                 res.append(coin_info)
                 return coin_info
     except Exception:
         return None
-
 
 
 async def main():
@@ -34,7 +34,7 @@ async def main():
     return await asyncio.gather(*tasks)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     loop = asyncio.new_event_loop()
     res = list(filter(None, loop.run_until_complete(main())))
     print(res)

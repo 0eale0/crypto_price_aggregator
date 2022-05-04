@@ -12,12 +12,11 @@ async def cryptocurrencies_usdt_price(name: str):
     res = []
     try:
         async with aiohttp.ClientSession() as session:
-            url = 'https://ftx.com/api/markets/'
-            async with session.get(
-                    url + f'{name}/USDT') as response:
+            url = "https://ftx.com/api/markets/"
+            async with session.get(url + f"{name}/USDT") as response:
                 json = await response.json()
                 result = json["result"]
-                coin_info = {"name": name, "price": result['price']}
+                coin_info = {"name": name, "price": result["price"]}
                 res.append(coin_info)
                 return coin_info
     except Exception:
@@ -33,9 +32,8 @@ async def main():
     return await asyncio.gather(*tasks)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     loop = asyncio.new_event_loop()
     res = list(filter(None, loop.run_until_complete(main())))
     print(res)
     loop.close()
-
