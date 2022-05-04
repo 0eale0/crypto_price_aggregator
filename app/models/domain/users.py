@@ -7,6 +7,8 @@ from sqlalchemy import (
     ForeignKey,
     CheckConstraint,
     Float,
+    BINARY,
+    TIMESTAMP
 )
 from sqlalchemy.ext.declarative import declarative_base
 from app.core.config import Configuration
@@ -64,6 +66,7 @@ class Cryptocurrency(Base):
     name = Column(Text, unique=True)
     symbol = Column(Text, unique=True)
     image_url = Column(Text)
+    time = Column(TIMESTAMP)
     exchange_id = Column(BIGINT, ForeignKey("exchanges.id"))
     price = Column(Float, CheckConstraint("price > 0", name="positive_price"))
 
