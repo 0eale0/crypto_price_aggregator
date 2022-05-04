@@ -8,7 +8,7 @@ from sqlalchemy import (
     CheckConstraint,
     Float,
     BINARY,
-    TIMESTAMP
+    TIMESTAMP,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from app.core.config import Configuration
