@@ -1,39 +1,36 @@
-import asyncio
-
-import aiohttp
-
-from api.crypto_sites.binance_api import get_binance_coins_names
+from api.crypto_sites.symbol_tracker import SymbolsTracker
 from app.api.crypto_sites.base_class import CryptoSiteApi
+import asyncio
+import aiohttp
+from pprint import pprint
 
 
 class FTX(CryptoSiteApi):
-    async def get_coin_price(self, name: str):
-        res = []
+
+    async def get_coin_price(self, symbol: str):
         try:
             async with aiohttp.ClientSession() as session:
                 url = 'https://ftx.com/api/markets/'
                 async with session.get(
-                        url + f'{name}/USDT') as response:
+                        url + f'{symbol}/USDT') as response:
                     json = await response.json()
                     result = json["result"]
-                    coin_info = {"name": name, "price": result['price']}
-                    res.append(coin_info)
-                    return coin_info
-        except Exception:
-            return None
+                    coin_info = {"symbol": symbol, "price": result['price']}
+            return coin_info
+        except Exception as e:
+            return
 
     async def __get_coin_prices(self):
-        names = get_binance_coins_names()  # We should get it from db
+        symbols = await SymbolsTracker.get_symbols()  # We should get it from db
         tasks = []
-        for name in names:
-            task = self.get_coin_price(name)
+        for symbol in symbols:
+            task = self.get_coin_price(symbol)
             tasks.append(task)
         return await asyncio.gather(*tasks)
 
     async def get_coin_prices(self):
-        res = list(filter(None, await self.__get_coin_prices()))
-
-        return res
+        payload = list(filter(None, await self.__get_coin_prices()))
+        return payload
 
     def save_in_db(self, result):
         pass
@@ -41,9 +38,8 @@ class FTX(CryptoSiteApi):
 
 async def main():
     ftx = FTX()
-
-    await ftx.get_coin_prices()
+    return await ftx.get_coin_prices()
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    pprint((asyncio.run(main())))
