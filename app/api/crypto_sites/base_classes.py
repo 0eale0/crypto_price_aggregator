@@ -1,60 +1,101 @@
+import asyncio
 from abc import ABC, abstractmethod
 
+from api.crypto_sites.symbol_tracker import SymbolsTracker
 from models.domain import users
 from models.domain.users import Exchange
 
 
-class CryptoSiteApi(ABC):
-    site_name = "name"
-
+class CryptoSiteApiInterface(ABC):
     @abstractmethod
-    def get_coin_price_from_api(self, name: str):
-        pass
-
-    def init_in_db(self):
+    async def get_coin_price_from_api(self, name: str):
         pass
 
     @abstractmethod
-    def _get_coin_prices_from_api(self):
+    async def get_coin_prices_from_api(self):
         pass
 
     @abstractmethod
-    def get_coin_prices_from_api(self):
+    def get_coin_price_from_db(self, name: str):
         pass
-
-    def save_in_db(self, result):
-        model_crypto = users.Cryptocurrency
-        session = users.session()
-
-        exchange_id = session.query(Exchange).filter_by(name="ftx").one().id
-        with session as sess:
-            for coin in result:
-                coin["exchange_id"] = exchange_id
-                print(coin)
-                crypto_currency = model_crypto(**coin)
-                sess.add(crypto_currency)
-
-            print("I AM DONE HEEEY")
-
-            sess.commit()
-
-            print("I AM COMMIT")
 
     @abstractmethod
     def get_coin_prices_from_db(self):
         pass
 
+    @abstractmethod
+    def save_in_db(self, result):
+        pass
 
-class CryptoSitesApi(ABC):
+
+class CryptoSiteApi(CryptoSiteApiInterface):
+    name = "null"
+
+    async def get_coin_price_from_api(self, name: str):
+        pass
+
+    async def get_coin_prices_from_api(self):
+        symbols = await SymbolsTracker().get_symbols()  # We should get it from db
+        tasks = []
+        for symbol in symbols:
+            task = self.get_coin_price_from_api(symbol)
+            tasks.append(task)
+
+        solved_tasks = await asyncio.gather(*tasks)
+        payload = list(filter(None, solved_tasks))
+        return payload
+
+    def get_coin_price_from_db(self, name: str):
+        pass
+
+    # TODO MAKE RESULT FRONTABLE (Object into dict)
+    def get_coin_prices_from_db(self):
+        model_crypto = users.Cryptocurrency
+        session = users.session()
+        exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
+
+        result = session.query(model_crypto).filter_by(exchange_id=exchange_id)
+
+        print(result)
+
+    # TODO FIX UPDATE IN DB
+    def save_in_db(self, result):
+        model_crypto = users.Cryptocurrency
+        session = users.session()
+        exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
+        with session as sess:
+            for coin in result:
+                coin["exchange_id"] = exchange_id
+                crypto_currency = model_crypto(**coin)
+                sess.add(crypto_currency)
+
+            sess.commit()
+
+
+class CryptoSitesApiInterface(ABC):
     def __init__(self, list_with_api: list):
         self.list_with_api = list_with_api
 
-    async def update_coin_prices(self):
-        for api in self.list_with_api:
-            prices_from_api = await api.get_coin_prices_from_api()
-            print(prices_from_api)
-            api.save_in_db(prices_from_api)
+    @abstractmethod
+    async def update_coin_prices_in_db(self):
+        pass
 
-    # TODO there is should be work with db ang get info from it
+    @abstractmethod
     def get_coin_prices(self):
         pass
+
+
+class CryptoSitesApi(CryptoSitesApiInterface):
+    def __init__(self, list_with_api: list):
+        super().__init__(list_with_api)
+
+    async def update_coin_prices_in_db(self):
+        print("UPDATING")
+        for api in self.list_with_api:
+            prices_from_api = await api.get_coin_prices_from_api()
+            api.save_in_db(prices_from_api)
+
+    #TODO END IT
+    def get_coin_prices(self):
+        for api in self.list_with_api:
+            api.get_coin_prices_from_db()

@@ -16,7 +16,6 @@ class SymbolsTracker:
             url = "https://cryptobubbles.net/backend/data/bubbles1000.usd.json"
             async with session.get(url) as response:
                 payload = await response.json()
-                result = []
                 return [coin["symbol"] for coin in payload if
                         all([coin[symbol] for symbol in self.symbols])]
 

@@ -1,12 +1,13 @@
-from app.api.crypto_sites.base_class import CryptoSiteApi
-from app.api.crypto_sites.symbol_tracker import SymbolsTracker
+from app.api.crypto_sites.base_classes import CryptoSiteApi
 import aiohttp
 import asyncio
 
 
 class BinanceAPI(CryptoSiteApi):
 
-    async def get_coin_price(self, symbol: str):
+    name = "binance"
+
+    async def get_coin_price_from_api(self, symbol: str):
         try:
             async with aiohttp.ClientSession() as session:
                 url = 'https://api.binance.com/'
@@ -18,13 +19,11 @@ class BinanceAPI(CryptoSiteApi):
         except Exception:
             return
 
-    async def save_in_db(self, result):
-        pass
-
 
 async def main():
     binance = BinanceAPI()
-    return await binance.get_coin_prices()
+    return await binance.get_coin_prices_from_api()
 
 if __name__ == '__main__':
-        print((asyncio.run(main())))
+
+    print((asyncio.run(main())))

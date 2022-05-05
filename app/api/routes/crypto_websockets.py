@@ -4,7 +4,6 @@ import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, APIRouter
 from fastapi.responses import HTMLResponse
 from fastapi_utils.tasks import repeat_every
-from sqlalchemy.orm import Session
 
 from app.api.services.observer_for_crypto_prices import crypto_api
 from app.models.domain import users
@@ -76,7 +75,7 @@ manager = ConnectionManager()
 @router.on_event("startup")
 @repeat_every(seconds=int(300))
 async def update_db():
-    await crypto_api.update_coin_prices()
+    await crypto_api.update_coin_prices_in_db()
     result = crypto_api.get_coin_prices()
     await manager.broadcast(result)
 
