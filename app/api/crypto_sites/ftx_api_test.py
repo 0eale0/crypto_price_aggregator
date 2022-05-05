@@ -20,16 +20,15 @@ class FTX(CryptoSiteApi):
         except Exception as e:
             return
 
-    async def __get_coin_prices(self):
+    async def get_coin_prices(self):
         symbols = await SymbolsTracker.get_symbols()  # We should get it from db
         tasks = []
         for symbol in symbols:
             task = self.get_coin_price(symbol)
             tasks.append(task)
-        return await asyncio.gather(*tasks)
 
-    async def get_coin_prices(self):
-        payload = list(filter(None, await self.__get_coin_prices()))
+        solved_tasks = await asyncio.gather(*tasks)
+        payload = list(filter(None, solved_tasks))
         return payload
 
     def save_in_db(self, result):
