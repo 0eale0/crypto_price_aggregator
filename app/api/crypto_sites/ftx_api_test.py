@@ -1,52 +1,44 @@
+from api.crypto_sites.symbol_tracker import SymbolsTracker
+from app.api.crypto_sites.base_class import CryptoSiteApi
 import asyncio
-
 import aiohttp
-
-from api.crypto_sites.binance_api import get_binance_coins_names
-from app.api.crypto_sites.base_classes import CryptoSiteApi
-from models.domain.users import Exchange
+from pprint import pprint
 
 
 class FTX(CryptoSiteApi):
-    name = "ftx"
 
-    async def get_coin_price_from_api(self, name: str):
-        res = []
+    async def get_coin_price(self, symbol: str):
         try:
             async with aiohttp.ClientSession() as session:
-                url = "https://ftx.com/api/markets/"
-                async with session.get(url + f"{name}/USDT") as response:
+                url = 'https://ftx.com/api/markets/'
+                async with session.get(
+                        url + f'{symbol}/USDT') as response:
                     json = await response.json()
                     result = json["result"]
-                    coin_info = {"name": name, "price": result["price"]}
-                    res.append(coin_info)
-                    return coin_info
-        except Exception:
-            return None
+                    coin_info = {"symbol": symbol, "price": result['price']}
+            return coin_info
+        except Exception as e:
+            return
 
-    async def _get_coin_prices_from_api(self):
-        names = get_binance_coins_names()  # We should get it from db
+    async def get_coin_prices(self):
+        symbols = await SymbolsTracker.get_symbols()  # We should get it from db
         tasks = []
-        for name in names:
-            task = self.get_coin_price_from_api(name)
+        for symbol in symbols:
+            task = self.get_coin_price(symbol)
             tasks.append(task)
-        return await asyncio.gather(*tasks)
 
-    async def get_coin_prices_from_api(self):
-        res = list(filter(None, await self._get_coin_prices_from_api()))
+        solved_tasks = await asyncio.gather(*tasks)
+        payload = list(filter(None, solved_tasks))
+        return payload
 
-        return res
-
-    def get_coin_prices_from_db(self):
+    def save_in_db(self, result):
         pass
 
 
 async def main():
-    names = get_binance_coins_names()
     ftx = FTX()
+    return await ftx.get_coin_prices()
 
-    print(await ftx.get_coin_prices_from_api())
 
-
-if __name__ == "__main__":
-    asyncio.run(main())
+if __name__ == '__main__':
+    pprint((asyncio.run(main())))
