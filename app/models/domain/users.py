@@ -1,24 +1,28 @@
 from sqlalchemy import (
     Column,
     Text,
-    Integer,
+    BIGINT,
     Boolean,
     String,
     ForeignKey,
     CheckConstraint,
+    Float,
+    BINARY,
+    TIMESTAMP,
 )
 from sqlalchemy.ext.declarative import declarative_base
-from core.config import Configuration
+from app.core.config import Configuration
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, backref, sessionmaker
 
 Base = declarative_base()
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)
+session = sessionmaker(bind=engine)
 
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
+    id = Column(BIGINT, primary_key=True)
     email = Column(Text, unique=True)
     username = Column(Text, unique=True)
     hashed_password = Column(Text)
@@ -28,12 +32,8 @@ class User(Base):
         lazy="select",
         backref=backref("users_fav_crypto", lazy="joined"),
     )
-    posts = relationship(
-        "Posts", lazy="select", backref=backref("posts", lazy="joined")
-    )
-    likes = relationship(
-        "Likes", lazy="select", backref=backref("likes", lazy="joined")
-    )
+    posts = relationship("Post", lazy="select", backref=backref("posts", lazy="joined"))
+    likes = relationship("Like", lazy="select", backref=backref("likes", lazy="joined"))
 
     def dumps(self):
         result = {"username": self.username, "email": self.email}
@@ -43,14 +43,14 @@ class User(Base):
 
 class Exchange(Base):
     __tablename__ = "exchanges"
-    id = Column(Integer, primary_key=True)
+    id = Column(BIGINT, primary_key=True)
     name = Column(Text, unique=True)
     year_established = Column(Text)
     url = Column(Text)
     country = Column(Text)
     image_url = Column(Text)
     trust_score = Column(
-        Integer, CheckConstraint("trust_score > 0", name="positive_trust_score")
+        BIGINT, CheckConstraint("trust_score > 0", name="positive_trust_score")
     )
 
     cryptos = relationship(
@@ -62,52 +62,64 @@ class Exchange(Base):
 
 class Cryptocurrency(Base):
     __tablename__ = "cryptocurrencies"
-    id = Column(Integer, primary_key=True)
+    id = Column(BIGINT, primary_key=True)
     name = Column(Text, unique=True)
     symbol = Column(Text, unique=True)
     image_url = Column(Text)
-    exchange_id = Column(Integer, ForeignKey("exchanges.id"))
-    price = Column(Integer, CheckConstraint("price > 0", name="positive_price"))
+    time = Column(TIMESTAMP)
+    exchange_id = Column(BIGINT, ForeignKey("exchanges.id"))
+    price = Column(Float, CheckConstraint("price > 0", name="positive_price"))
+
+    def dumps(self):
+        values_to_dump = ("name", "symbol", "image_url", "time", "exchange_id", "price")
+        result = {key: getattr(self, key) for key in values_to_dump}
+
+        return result
 
 
 class UserFavouriteCrypto(Base):
     __tablename__ = "users_favourite_cryptos"
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Text, ForeignKey("users.id"))
-    coin_id = Column(Text, ForeignKey("cryptocurrencies.id"))
+    id = Column(BIGINT, primary_key=True)
+    user_id = Column(BIGINT, ForeignKey("users.id"))
+    coin_id = Column(BIGINT, ForeignKey("cryptocurrencies.id"))
 
 
 class Post(Base):
     """
     #TO DO: image должен принимать другой тип
     """
-    __tablename__ = "posts"
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    data = Column(Text)
-    image = Column(Text)
 
-    likes = relationship("Likes", lazy="select", backref=backref("like", lazy="joined"))
-    posts_comments = relationship("PostsComment", lazy="select", backref=backref("posts_comments", lazy="joined"))
+    __tablename__ = "posts"
+    id = Column(BIGINT, primary_key=True)
+    user_id = Column(BIGINT, ForeignKey("users.id"))
+    data = Column(Text)
+
+    likes = relationship("Like", lazy="select", backref=backref("like", lazy="joined"))
+    posts_comments = relationship(
+        "PostsComment", lazy="select", backref=backref("posts_comments", lazy="joined")
+    )
 
 
 class PostPicture(Base):
     __tablename__ = "post_pictures"
-    id = Column(Integer, primary_key=True)
-    post_id = Column(Integer, ForeignKey("posts.id"), primary_key=True)
+    id = Column(BIGINT, primary_key=True)
+    post_id = Column(BIGINT, ForeignKey("posts.id"), primary_key=True)
     post = relationship("Post")
 
 
 class Like(Base):
     __tablename__ = "likes"
-    like_id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    post_id = Column(Integer, ForeignKey("posts.id"))
+    like_id = Column(BIGINT, primary_key=True)
+    user_id = Column(BIGINT, ForeignKey("users.id"))
+    post_id = Column(BIGINT, ForeignKey("posts.id"))
 
 
 class PostsComment(Base):
     __tablename__ = "posts_comments"
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("posts.user_id"))
-    post_id = Column(Integer, ForeignKey("posts.id"))
+    id = Column(BIGINT, primary_key=True)
+    user_id = Column(BIGINT, ForeignKey("users.id"))
+    post_id = Column(BIGINT, ForeignKey("posts.id"))
     data = Column(String(100))
+
+
+# Base.metadata.create_all(engine)

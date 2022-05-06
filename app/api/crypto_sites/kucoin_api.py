@@ -1,41 +1,30 @@
-from binance_api import get_binance_coins_names
+from app.api.crypto_sites.base_classes import CryptoSiteApi
 import aiohttp
 import asyncio
-import time
+from pprint import pprint
 
 
-async def kucoin_prices(name: str):
-    start = time.time()
-    """
-    Возвращает список монет с их именем и ценой, которые есть и на kucoin, и на binance
-    """
-    res = []
-    try:
-        async with aiohttp.ClientSession() as session:
-            url = 'https://api.kucoin.com'
-            async with session.get(
-                    url + f'/api/v1/market/orderbook/level1?symbol={name}-USDT') as response:
-                json = await response.json()
-                data = json["data"]
-                coin_info = {"name": name, "price": float(data['price'])}
-                res.append(coin_info)
-                return coin_info
-    except Exception:
-        return None
+class KucoinAPI(CryptoSiteApi):
 
+    name = "kucoin"
 
+    async def get_coin_price_from_api(self, symbol: str):
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = 'https://api.kucoin.com'
+                async with session.get(
+                        url + f'/api/v1/market/orderbook/level1?symbol={symbol.upper()}-USDT') as response:
+                    json = await response.json()
+                    data = json["data"]
+                    coin_info = {"name": symbol.upper(), "price": float(data['price'])}
+                    return coin_info
+        except Exception:
+            return
 
 async def main():
-    names = get_binance_coins_names()
-    tasks = []
-    for name in names:
-        task = kucoin_prices(name)
-        tasks.append(task)
-    return await asyncio.gather(*tasks)
+    kucoin = KucoinAPI()
+    return await kucoin.get_coin_prices_from_api()
 
 
 if __name__ == '__main__':
-    loop = asyncio.new_event_loop()
-    res = list(filter(None, loop.run_until_complete(main())))
-    print(res)
-    loop.close()
+    pprint((asyncio.run(main())))

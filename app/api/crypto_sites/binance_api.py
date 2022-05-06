@@ -1,25 +1,29 @@
-from binance.client import Client
+from app.api.crypto_sites.base_classes import CryptoSiteApi
+import aiohttp
+import asyncio
 
 
-def binance_cryptocurrencies_usdt_price() -> list:
-    """
-    Возвращает отсортированные пары по цене в долларах от большего к меньшему
-    """
-    result = list()
-    c = Client()
-    tickers = c.get_all_tickers()
-    for coin in tickers:
-        coin["price"] = float(coin["price"])
-        if "USDT" in coin['symbol']:
-            result.append(coin)
-        else:
-            continue
-    return list(filter(lambda x: max(str(x['price'])), result))
+class BinanceAPI(CryptoSiteApi):
+
+    name = "binance"
+
+    async def get_coin_price_from_api(self, symbol: str):
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = 'https://api.binance.com/'
+                async with session.get(
+                            url + f'api/v3/ticker/price?symbol={symbol.upper()}USDT') as response:
+                        payload = await response.json()
+                        coin_info = {"name": symbol, "price": float(payload['price'])}
+                        return coin_info
+        except Exception:
+            return
 
 
-def get_binance_coins_names():
-    names = []
-    result = binance_cryptocurrencies_usdt_price()
-    for coin in result:
-        names.append(coin["symbol"][:-4])
-    return names
+async def main():
+    binance = BinanceAPI()
+    return await binance.get_coin_prices_from_api()
+
+if __name__ == '__main__':
+
+    print((asyncio.run(main())))
