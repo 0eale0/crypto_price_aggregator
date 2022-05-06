@@ -8,7 +8,7 @@ from fastapi_utils.tasks import repeat_every
 
 from app.api.services.loader import crypto_api
 from app.models.domain import users
-from models.domain.users import Exchange
+from app.models.domain.users import Exchange
 
 app = FastAPI()
 router = APIRouter()

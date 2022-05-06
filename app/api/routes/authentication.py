@@ -14,10 +14,10 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
 from app.api.services.db_services import get_session, create_new_user, change_user
-from models.schemas.tokens import Token
+from app.models.schemas.tokens import Token
 from app.api.services import auth_helpers
-from models.forms.users import RegistrationForm, ChangeDataForm
-from models.domain.users import User
+from app.models.forms.users import RegistrationForm, ChangeDataForm
+from app.models.domain.users import User
 
 router = APIRouter()
 
