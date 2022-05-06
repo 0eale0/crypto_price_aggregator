@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 
+import aiohttp
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -94,9 +95,9 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(
-    request: Request,
-    db: Session = Depends(get_session),
-    form_data: OAuth2PasswordRequestForm = Depends(),
+        request: Request,
+        db: Session = Depends(get_session),
+        form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     """
     Logins through site system
@@ -122,7 +123,7 @@ async def login_for_access_token(
 
 @router.post("/change_data")
 async def change_data(
-    request: Request, form: ChangeDataForm, db: Session = Depends(get_session)
+        request: Request, form: ChangeDataForm, db: Session = Depends(get_session)
 ):
     try:
         user = request.session.get("user")
@@ -155,3 +156,23 @@ async def homepage(request: Request):
         detail="Not authorized",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+@router.post("/get_crypto_info")
+async def get_crypto_info(request: Request, form: NameCryptoForm):
+    try:
+        user = request.session.get("user")
+        if user:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                        f'https://api.coingecko.com/api/v3/coins/{form.name_crypto}') as response:
+                    json = await response.json()
+                    coin_info = {"name": json['description']['en']}
+                    return coin_info
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authorized",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except Exception:
+        return
