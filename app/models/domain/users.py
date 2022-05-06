@@ -70,6 +70,12 @@ class Cryptocurrency(Base):
     exchange_id = Column(BIGINT, ForeignKey("exchanges.id"))
     price = Column(Float, CheckConstraint("price > 0", name="positive_price"))
 
+    def dumps(self):
+        values_to_dump = ("name", "symbol", "image_url", "time", "exchange_id", "price")
+        result = {key: getattr(self, key) for key in values_to_dump}
+
+        return result
+
 
 class UserFavouriteCrypto(Base):
     __tablename__ = "users_favourite_cryptos"

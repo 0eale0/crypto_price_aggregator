@@ -1,12 +1,18 @@
 import asyncio
 from abc import ABC, abstractmethod
 
+from sqlalchemy.exc import IntegrityError
+
 from api.crypto_sites.symbol_tracker import SymbolsTracker
 from models.domain import users
 from models.domain.users import Exchange
 
 
 class CryptoSiteApiInterface(ABC):
+    @abstractmethod
+    def __init__(self):
+        pass
+
     @abstractmethod
     async def get_coin_price_from_api(self, name: str):
         pass
@@ -31,6 +37,19 @@ class CryptoSiteApiInterface(ABC):
 class CryptoSiteApi(CryptoSiteApiInterface):
     name = "null"
 
+    # Create exchange in db if it's not
+    def __init__(self):
+        session = users.session()
+
+        with session as sess:
+            exchange = Exchange(name=self.name)
+            sess.add(exchange)
+
+            try:
+                sess.commit()
+            except IntegrityError:
+                pass
+
     async def get_coin_price_from_api(self, name: str):
         pass
 
@@ -48,15 +67,16 @@ class CryptoSiteApi(CryptoSiteApiInterface):
     def get_coin_price_from_db(self, name: str):
         pass
 
-    # TODO MAKE RESULT FRONTABLE (Object into dict)
+    # TODO MAKE IT WITHOUT DUMPS
     def get_coin_prices_from_db(self):
         model_crypto = users.Cryptocurrency
         session = users.session()
         exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
 
         result = session.query(model_crypto).filter_by(exchange_id=exchange_id)
+        result = [coin.dumps() for coin in result]
 
-        print(result)
+        return result
 
     # TODO FIX UPDATE IN DB
     def save_in_db(self, result):
@@ -90,12 +110,14 @@ class CryptoSitesApi(CryptoSitesApiInterface):
         super().__init__(list_with_api)
 
     async def update_coin_prices_in_db(self):
-        print("UPDATING")
         for api in self.list_with_api:
             prices_from_api = await api.get_coin_prices_from_api()
             api.save_in_db(prices_from_api)
 
     #TODO END IT
     def get_coin_prices(self):
+        result = {}
         for api in self.list_with_api:
-            api.get_coin_prices_from_db()
+            result[api.name] = api.get_coin_prices_from_db()
+
+        return result
