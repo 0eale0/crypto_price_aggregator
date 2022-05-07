@@ -68,3 +68,7 @@ class ChangeDataForm(BaseModel):
         if not len(v) >= 4:
             raise ValueError("Password length should be at least 4 symbols")
         return v
+
+
+class NameCryptoForm(BaseModel):
+    name_crypto: str

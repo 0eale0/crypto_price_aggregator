@@ -8,7 +8,7 @@ from fastapi_utils.tasks import repeat_every
 
 from app.api.services.loader import crypto_api
 from app.models.domain import users
-from models.domain.users import Exchange
+from app.models.domain.users import Exchange
 
 app = FastAPI()
 router = APIRouter()
@@ -81,6 +81,7 @@ async def update_db():
         await crypto_api.update_coin_prices_in_db()
     except Exception as error:
         print("Need add time into db")
+        print(error)
 
     result = json.dumps(crypto_api.get_coin_prices())
     await manager.broadcast(result)

@@ -1,11 +1,12 @@
 import asyncio
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 
 from sqlalchemy.exc import IntegrityError
 
 from api.crypto_sites.symbol_tracker import SymbolsTracker
 from models.domain import users
-from models.domain.users import Exchange
+from models.domain.users import Exchange, Cryptocurrency
 
 
 class CryptoSiteApiInterface(ABC):
@@ -80,16 +81,43 @@ class CryptoSiteApi(CryptoSiteApiInterface):
 
     # TODO FIX UPDATE IN DB
     def save_in_db(self, result):
+        # add coins into db, if it's not
         model_crypto = users.Cryptocurrency
         session = users.session()
-        exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
         with session as sess:
             for coin in result:
-                coin["exchange_id"] = exchange_id
-                crypto_currency = model_crypto(**coin)
-                sess.add(crypto_currency)
+                print(coin)
+                coin_from_db = sess.query(Cryptocurrency).filter_by(symbol=coin["symbol"]).first()
+                # add coins if it's not in db
+                if not coin_from_db:
+                    values_to_write_into_cryptocurrency_db = ["symbol"]
+                    info_for_write_into_cryptocurrency_db = {key: coin[key] for key in
+                                                             values_to_write_into_cryptocurrency_db}
 
-            sess.commit()
+                    crypto_currency = model_crypto(**info_for_write_into_cryptocurrency_db)
+                    sess.add(crypto_currency)
+
+                    sess.commit()
+
+                coin_id = sess.query(Cryptocurrency).filter_by(symbol=coin["symbol"]).first().id
+                exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
+                price = coin["price"]
+                time_for_coin = datetime.now(timezone.utc)
+
+                coin_price_with_time = users.CoinPrice(coin_id=coin_id, exchange_id=exchange_id,
+                                                       price=price, time=time_for_coin)
+
+                sess.add(coin_price_with_time)
+
+                sess.commit()
+
+
+
+
+
+
+
+
 
 
 class CryptoSitesApiInterface(ABC):
@@ -114,7 +142,7 @@ class CryptoSitesApi(CryptoSitesApiInterface):
             prices_from_api = await api.get_coin_prices_from_api()
             api.save_in_db(prices_from_api)
 
-    #TODO END IT
+    # TODO END IT
     def get_coin_prices(self):
         result = {}
         for api in self.list_with_api:
