@@ -52,11 +52,10 @@ class Exchange(Base):
     trust_score = Column(
         BIGINT, CheckConstraint("trust_score > 0", name="positive_trust_score")
     )
-
-    cryptos = relationship(
-        "Cryptocurrency",
+    coin_price = relationship(
+        "CoinPrice",
         lazy="select",
-        backref=backref("cryptocurrency", lazy="joined"),
+        backref=backref("coin_price", lazy="joined"),
     )
 
 
@@ -66,15 +65,22 @@ class Cryptocurrency(Base):
     name = Column(Text, unique=True)
     symbol = Column(Text, unique=True)
     image_url = Column(Text)
-    time = Column(TIMESTAMP)
-    exchange_id = Column(BIGINT, ForeignKey("exchanges.id"))
-    price = Column(Float, CheckConstraint("price > 0", name="positive_price"))
+    crypto_info = Column(Text)
 
     def dumps(self):
         values_to_dump = ("name", "symbol", "image_url", "time", "exchange_id", "price")
         result = {key: getattr(self, key) for key in values_to_dump}
 
         return result
+
+
+class CoinPrice(Base):
+    __tablename__ = "coin_price"
+    id = Column(BIGINT, primary_key=True)
+    coin_id = Column(BIGINT, ForeignKey("cryptocurrencies.id"))
+    exchange_id = Column(BIGINT, ForeignKey("exchanges.id"))
+    price = Column(Float, CheckConstraint("price > 0", name="positive_price"))
+    time = Column(TIMESTAMP)
 
 
 class UserFavouriteCrypto(Base):
@@ -102,14 +108,15 @@ class Post(Base):
 
 class PostPicture(Base):
     __tablename__ = "post_pictures"
-    id = Column(BIGINT, primary_key=True)
+    post_picture_id = Column(BIGINT, primary_key=True)
     post_id = Column(BIGINT, ForeignKey("posts.id"), primary_key=True)
+    picture_url = Column(Text)
     post = relationship("Post")
 
 
 class Like(Base):
     __tablename__ = "likes"
-    like_id = Column(BIGINT, primary_key=True)
+    id = Column(BIGINT, primary_key=True)
     user_id = Column(BIGINT, ForeignKey("users.id"))
     post_id = Column(BIGINT, ForeignKey("posts.id"))
 
@@ -120,6 +127,5 @@ class PostsComment(Base):
     user_id = Column(BIGINT, ForeignKey("users.id"))
     post_id = Column(BIGINT, ForeignKey("posts.id"))
     data = Column(String(100))
-
 
 # Base.metadata.create_all(engine)
