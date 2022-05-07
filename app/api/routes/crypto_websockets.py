@@ -78,6 +78,7 @@ manager = ConnectionManager()
 @repeat_every(seconds=int(300))
 async def update_db():
     try:
+        print("FKDKFS")
         await crypto_api.update_coin_prices_in_db()
     except Exception as error:
         print("Need add time into db")

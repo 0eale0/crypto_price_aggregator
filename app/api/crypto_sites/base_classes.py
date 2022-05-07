@@ -55,10 +55,10 @@ class CryptoSiteApi(CryptoSiteApiInterface):
         pass
 
     async def get_coin_prices_from_api(self):
-        symbols = await SymbolsTracker().get_symbols()  # We should get it from db
+        coins_info = await SymbolsTracker().get_symbols()  # We should get it from db
         tasks = []
-        for symbol in symbols:
-            task = self.get_coin_price_from_api(symbol)
+        for coin_info in coins_info:
+            task = self.get_coin_price_from_api(coin_info["symbol"])
             tasks.append(task)
 
         solved_tasks = await asyncio.gather(*tasks)
@@ -86,7 +86,6 @@ class CryptoSiteApi(CryptoSiteApiInterface):
         session = users.session()
         with session as sess:
             for coin in result:
-                print(coin)
                 coin_from_db = sess.query(Cryptocurrency).filter_by(symbol=coin["symbol"]).first()
                 # add coins if it's not in db
                 if not coin_from_db:
@@ -102,6 +101,7 @@ class CryptoSiteApi(CryptoSiteApiInterface):
                 coin_id = sess.query(Cryptocurrency).filter_by(symbol=coin["symbol"]).first().id
                 exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
                 price = coin["price"]
+                # name = coin["name"]
                 time_for_coin = datetime.now(timezone.utc)
 
                 coin_price_with_time = users.CoinPrice(coin_id=coin_id, exchange_id=exchange_id,
@@ -110,15 +110,6 @@ class CryptoSiteApi(CryptoSiteApiInterface):
                 sess.add(coin_price_with_time)
 
                 sess.commit()
-
-
-
-
-
-
-
-
-
 
 class CryptoSitesApiInterface(ABC):
     def __init__(self, list_with_api: list):
