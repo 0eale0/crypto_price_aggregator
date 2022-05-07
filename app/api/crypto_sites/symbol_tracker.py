@@ -18,7 +18,7 @@ class SymbolsTracker:
             async with session.get(url) as response:
                 payload = await response.json()
                 return [
-                    coin["symbol"]
+                    {"symbol": coin["symbol"], "name": coin["name"]}
                     for coin in payload
                     if all([coin[symbol] for symbol in self.symbols])
                 ]
