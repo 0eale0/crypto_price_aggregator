@@ -6,11 +6,8 @@ import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, APIRouter
 from fastapi.responses import HTMLResponse
 from fastapi_utils.tasks import repeat_every
-from sqlalchemy import func
 
 from app.api.services.loader import crypto_api
-from app.models.domain import users
-from app.models.domain.users import Exchange
 
 app = FastAPI()
 router = APIRouter()

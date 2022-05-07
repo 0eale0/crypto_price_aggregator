@@ -156,23 +156,3 @@ async def homepage(request: Request):
         detail="Not authorized",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
-
-@router.post("/get_crypto_info")
-async def get_crypto_info(request: Request, form: NameCryptoForm):
-    try:
-        user = request.session.get("user")
-        if user:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                        f'https://api.coingecko.com/api/v3/coins/{form.name_crypto}') as response:
-                    json = await response.json()
-                    coin_info = {"name": json['description']['en']}
-                    return coin_info
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authorized",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    except Exception:
-        return
