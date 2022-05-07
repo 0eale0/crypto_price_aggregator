@@ -15,7 +15,7 @@ class BinanceAPI(CryptoSiteApi):
                     url + f"api/v3/ticker/price?symbol={symbol.upper()}USDT"
                 ) as response:
                     payload = await response.json()
-                    coin_info = {"name": symbol, "price": float(payload["price"])}
+                    coin_info = {"symbol": symbol, "price": float(payload["price"])}
                     return coin_info
         except Exception:
             return

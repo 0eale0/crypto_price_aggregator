@@ -81,6 +81,7 @@ async def update_db():
         await crypto_api.update_coin_prices_in_db()
     except Exception as error:
         print("Need add time into db")
+        print(error)
 
     result = json.dumps(crypto_api.get_coin_prices())
     await manager.broadcast(result)
