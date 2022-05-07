@@ -2,11 +2,12 @@ import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from api.crypto_sites.symbol_tracker import SymbolsTracker
 from models.domain import users
-from models.domain.users import Exchange, Cryptocurrency
+from models.domain.users import Exchange, Cryptocurrency, CoinPrice
 
 
 class CryptoSiteApiInterface(ABC):
@@ -70,13 +71,23 @@ class CryptoSiteApi(CryptoSiteApiInterface):
 
     # TODO MAKE IT WITHOUT DUMPS
     def get_coin_prices_from_db(self):
-        model_crypto = users.Cryptocurrency
         session = users.session()
         exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
 
-        result = session.query(model_crypto).filter_by(exchange_id=exchange_id)
-        result = [coin.dumps() for coin in result]
+        max_time_from_db = session.query(func.max(users.CoinPrice.time)) \
+            .filter_by(exchange_id=exchange_id) \
+            .first()[0]
 
+        coins_and_prices_from_db = session.query(users.Cryptocurrency, users.CoinPrice) \
+            .join(users.Cryptocurrency) \
+            .order_by(users.CoinPrice.time).filter(users.CoinPrice.time == max_time_from_db)
+
+        result = []
+
+        for coin in coins_and_prices_from_db:
+            coin_info = {"symbol": coin[0].symbol, "name": coin[0].name,
+                         "price": coin[1].price}
+            result.append(coin_info)
         return result
 
     # TODO FIX UPDATE IN DB
@@ -84,6 +95,7 @@ class CryptoSiteApi(CryptoSiteApiInterface):
         # add coins into db, if it's not
         model_crypto = users.Cryptocurrency
         session = users.session()
+        time_for_coin = datetime.now(timezone.utc)
         with session as sess:
             for coin in result:
                 coin_from_db = sess.query(Cryptocurrency).filter_by(symbol=coin["symbol"]).first()
@@ -102,7 +114,6 @@ class CryptoSiteApi(CryptoSiteApiInterface):
                 exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
                 price = coin["price"]
                 # name = coin["name"]
-                time_for_coin = datetime.now(timezone.utc)
 
                 coin_price_with_time = users.CoinPrice(coin_id=coin_id, exchange_id=exchange_id,
                                                        price=price, time=time_for_coin)
@@ -110,6 +121,7 @@ class CryptoSiteApi(CryptoSiteApiInterface):
                 sess.add(coin_price_with_time)
 
                 sess.commit()
+
 
 class CryptoSitesApiInterface(ABC):
     def __init__(self, list_with_api: list):
