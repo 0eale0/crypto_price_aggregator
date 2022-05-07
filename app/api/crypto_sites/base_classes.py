@@ -55,10 +55,10 @@ class CryptoSiteApi(CryptoSiteApiInterface):
         pass
 
     async def get_coin_prices_from_api(self):
-        symbols = await SymbolsTracker().get_symbols()  # We should get it from db
+        coins_info = await SymbolsTracker().get_symbols()  # We should get it from db
         tasks = []
-        for symbol in symbols:
-            task = self.get_coin_price_from_api(symbol)
+        for coin_info in coins_info:
+            task = self.get_coin_price_from_api(coin_info["symbol"])
             tasks.append(task)
 
         solved_tasks = await asyncio.gather(*tasks)
