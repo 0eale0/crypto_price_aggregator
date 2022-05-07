@@ -2,11 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 
-from models.forms.users import RegistrationForm, ChangeDataForm
-from models.domain.users import User
-from models.schemas.users import UserInDB
-from api.services.auth_helpers import get_password_hash
-from core.config import Configuration
+from app.models.forms.users import RegistrationForm, ChangeDataForm
+from app.models.domain.users import User
+from app.models.schemas.users import UserInDB
+from app.api.services.auth_helpers import get_password_hash
+from app.core.config import Configuration
 
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
