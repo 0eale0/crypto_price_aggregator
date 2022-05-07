@@ -114,7 +114,7 @@ class CryptoSitesApi(CryptoSitesApiInterface):
             prices_from_api = await api.get_coin_prices_from_api()
             api.save_in_db(prices_from_api)
 
-    #TODO END IT
+    # TODO END IT
     def get_coin_prices(self):
         result = {}
         for api in self.list_with_api:
