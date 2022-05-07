@@ -61,3 +61,20 @@ def add_favourite_crypto_in_db(request: Request, form: NameFavouriteCryptoForm, 
         )
     except Exception as e:
         return str(e)
+
+
+@router.get("/get_favourite_crypto")
+def add_favourite_crypto_in_db(request: Request, db: Session = Depends(get_session)):
+    try:
+        current_user = request.session.get("user")
+        user = db.query(User).filter(User.username == current_user["username"]).first()
+        if user:
+            user_with_fav_crypto = db.query(UserFavouriteCrypto).filter(user.id == UserFavouriteCrypto.user_id).all()
+            return user_with_fav_crypto
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authorized",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except Exception as e:
+        return str(e)
