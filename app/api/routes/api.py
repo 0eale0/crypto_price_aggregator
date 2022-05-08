@@ -8,4 +8,4 @@ router = APIRouter()
 
 router.include_router(authentication.router, tags=["authentication"], prefix="/auth")
 router.include_router(crypto_websockets.router, tags=["api"], prefix="")
-router.include_router(statistics.router, tags=["top10"], prefix="")
+router.include_router(statistics.router, tags=["statistics"], prefix="")

@@ -1,13 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
 from app.api.services.db_services import get_session
-from app.models.domain.users import CoinPrice, engine
-
+from app.models.domain.users import CoinPrice
+from app.core.queries import min_max_average_price_by_exchange_for_each
+from app.api.services.statistics_services import get_aggregated_prices
 router = APIRouter()
-
-
-# asc возрастающ
 
 
 @router.get("/top_most_expensive_assets")
@@ -37,15 +35,13 @@ def top_10_cheapest(db: Session = Depends(get_session)):
 
 
 @router.get("/main_crypto")
-def average_min_max_price_by_exchange(db: Session = Depends(get_session)):
-    raw = ("select coin_id, max(price), min(price)"
-           "from coin_price"
-           " where current_date - coin_price.time <= interval '5 minutes'"
-           "group by coin_id order by coin_id")
-
-    conn = engine.connect()
+def average_min_max_price_by_exchange():
+    query = min_max_average_price_by_exchange_for_each
     try:
-        res = conn.execute(raw)
-        return [r for r in res]
-    except Exception as e:
-        print(e)
+        prices = get_aggregated_prices(query)
+        return prices
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_204_NO_CONTENT,
+            detail="Try again please"
+        )
