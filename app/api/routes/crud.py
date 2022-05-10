@@ -16,6 +16,16 @@ router_user = SQLAlchemyCRUDRouter(schema=crud.User,
                                    db_model=users.User,
                                    db=get_session)
 
+
+@router_user.post('')
+def create_one(form: crud.UserCreate, db: Session = Depends(get_session)):
+    try:
+        user = create_new_user(form, db)
+        return HTMLResponse(content="User is created", status_code=200)
+    except IntegrityError as e:
+        return HTMLResponse("This email or username already exists")
+
+
 router_exchange = SQLAlchemyCRUDRouter(schema=crud.Exchange,
                                        db_model=users.Exchange,
                                        db=get_session)
@@ -32,12 +42,14 @@ router_post = SQLAlchemyCRUDRouter(schema=crud.Post,
                                    db_model=users.Post,
                                    db=get_session)
 
+router_post_picture = SQLAlchemyCRUDRouter(schema=crud.PostPicture,
+                                           db_model=users.PostPicture,
+                                           db=get_session)
 
-@router_user.post('')
-def create_one(form: crud.UserCreate, db: Session = Depends(get_session)):
-    try:
-        user = create_new_user(form, db)
-        return HTMLResponse(content="User is created", status_code=200)
-    except IntegrityError as e:
-        return HTMLResponse("This email or username already exists")
+router_like = SQLAlchemyCRUDRouter(schema=crud.Like,
+                                   db_model=users.Like,
+                                   db=get_session)
 
+router_posts_comment = SQLAlchemyCRUDRouter(schema=crud.PostsComment,
+                                            db_model=users.PostsComment,
+                                            db=get_session)

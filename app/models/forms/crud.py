@@ -69,3 +69,16 @@ class PostPicture(FormForCrud):
     id: int
     post_id: int
     picture_url: str
+
+
+class Like(FormForCrud):
+    id: int
+    user_id: int
+    post_id: int
+
+
+class PostsComment(FormForCrud):
+    id: int
+    user_id: int
+    post_id: int
+    data: str
