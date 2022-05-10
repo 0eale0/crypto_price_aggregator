@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator, NonNegativeInt
 from pydantic.schema import Optional, Dict
 import datetime
 
@@ -11,8 +11,8 @@ class Cryptocurrency(FormForCrud):
     id: int
     name: str
     symbol: str
-    image_url: str
-    crypto_info: str
+    image_url: Optional[str]
+    crypto_info: Optional[str]
 
 
 class User(FormForCrud):
@@ -39,18 +39,11 @@ class CoinPrice(FormForCrud):
 class Exchange(FormForCrud):
     id: int
     name: str
-    year_established: str
-    url: str
-    country: str
-    image_url: str
-    trust_score: int
-
-    @validator('trust_score')
-    def trust_score_not_negative(cls, v):
-        if v > 0:
-            return v.title
-
-        raise ValueError("trust_score should be > 0")
+    year_established: Optional[str]
+    url: Optional[str]
+    country: Optional[str]
+    image_url: Optional[str]
+    trust_score: Optional[NonNegativeInt]
 
 
 class UserFavouriteCrypto(FormForCrud):
