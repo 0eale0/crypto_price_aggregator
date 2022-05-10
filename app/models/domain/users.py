@@ -91,10 +91,6 @@ class UserFavouriteCrypto(Base):
 
 
 class Post(Base):
-    """
-    #TO DO: image должен принимать другой тип
-    """
-
     __tablename__ = "posts"
     id = Column(BIGINT, primary_key=True)
     user_id = Column(BIGINT, ForeignKey("users.id"))
@@ -108,7 +104,7 @@ class Post(Base):
 
 class PostPicture(Base):
     __tablename__ = "post_pictures"
-    post_picture_id = Column(BIGINT, primary_key=True)
+    id = Column(BIGINT, primary_key=True)
     post_id = Column(BIGINT, ForeignKey("posts.id"), primary_key=True)
     picture_url = Column(Text)
     post = relationship("Post")

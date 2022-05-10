@@ -308,6 +308,17 @@ doc = ["mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "mdx-inclu
 test = ["pytest (>=6.2.4,<7.0.0)", "pytest-cov (>=2.12.0,<4.0.0)", "mypy (==0.910)", "flake8 (>=3.8.3,<4.0.0)", "black (==22.3.0)", "isort (>=5.0.6,<6.0.0)", "requests (>=2.24.0,<3.0.0)", "httpx (>=0.14.0,<0.19.0)", "email_validator (>=1.1.1,<2.0.0)", "sqlalchemy (>=1.3.18,<1.5.0)", "peewee (>=3.13.3,<4.0.0)", "databases[sqlite] (>=0.3.2,<0.6.0)", "orjson (>=3.2.1,<4.0.0)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "flask (>=1.1.2,<3.0.0)", "anyio[trio] (>=3.2.1,<4.0.0)", "types-ujson (==4.2.1)", "types-orjson (==3.6.2)", "types-dataclasses (==0.6.5)"]
 
 [[package]]
+name = "fastapi-crudrouter"
+version = "0.8.5"
+description = "A dynamic FastAPI router that automatically creates CRUD routes for your models"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+fastapi = "*"
+
+[[package]]
 name = "fastapi-utils"
 version = "0.2.1"
 description = "Reusable utilities for FastAPI"
@@ -970,7 +981,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "2f5cdeb30d5ed1f318470bcb309811db7cbada4390229963994582cacaf32ecc"
+content-hash = "37971fb78485aff3baa27f84a91a00a953fcc1b6f535f82c50d6a64e539ab762"
 
 [metadata.files]
 aiohttp = [
@@ -1229,6 +1240,10 @@ email-validator = [
 fastapi = [
     {file = "fastapi-0.75.2-py3-none-any.whl", hash = "sha256:a70d31f4249b6b42dbe267667d22f83af645b2d857876c97f83ca9573215784f"},
     {file = "fastapi-0.75.2.tar.gz", hash = "sha256:b5dac161ee19d33346040d3f44d8b7a9ac09b37df9efff95891f5e7641fa482f"},
+]
+fastapi-crudrouter = [
+    {file = "fastapi-crudrouter-0.8.5.tar.gz", hash = "sha256:ba73c6e39819159a4e6a879797b787b2057f0e6be3005cb956e2081243491942"},
+    {file = "fastapi_crudrouter-0.8.5-py3-none-any.whl", hash = "sha256:798a2183a630ab36a5fc08f00fe5215cead6b5eee1f87e3a3c38bf9c73c0c17d"},
 ]
 fastapi-utils = [
     {file = "fastapi-utils-0.2.1.tar.gz", hash = "sha256:0e6c7fc1870b80e681494957abf65d4f4f42f4c7f70005918e9181b22f1bd759"},
