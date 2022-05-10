@@ -72,3 +72,7 @@ class ChangeDataForm(BaseModel):
 
 class NameCryptoForm(BaseModel):
     name_crypto: str
+
+
+class NameFavouriteCryptoForm(BaseModel):
+    name_crypto: str
