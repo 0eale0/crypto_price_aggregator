@@ -18,9 +18,9 @@ router = APIRouter()
 def top_10_most_expensive(db: Session = Depends(get_session)):
     coins = [
         c.dumps()
-        for c in db.query(Cryptocurrency)
-            .order_by(desc(Cryptocurrency.price))
-            .order_by(desc(Cryptocurrency.time))
+        for c in db.query(CoinPrice)
+            .order_by(desc(CoinPrice.price))
+            .order_by(desc(CoinPrice.time))
             .limit(10)
             .all()
     ]
@@ -31,9 +31,9 @@ def top_10_most_expensive(db: Session = Depends(get_session)):
 def top_10_cheapest(db: Session = Depends(get_session)):
     coins = [
         c.dumps()
-        for c in db.query(Cryptocurrency)
-            .order_by(asc(Cryptocurrency.price))
-            .order_by(desc(Cryptocurrency.time))
+        for c in db.query(CoinPrice)
+            .order_by(asc(CoinPrice.price))
+            .order_by(desc(CoinPrice.time))
             .limit(10)
             .all()
     ]
