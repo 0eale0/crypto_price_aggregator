@@ -1,3 +1,4 @@
+import datetime
 import json
 from typing import List
 
@@ -7,8 +8,6 @@ from fastapi.responses import HTMLResponse
 from fastapi_utils.tasks import repeat_every
 
 from app.api.services.loader import crypto_api
-from app.models.domain import users
-from app.models.domain.users import Exchange
 
 app = FastAPI()
 router = APIRouter()
@@ -67,7 +66,6 @@ class ConnectionManager:
 
     async def broadcast(self, message: str):
         for connection in self.active_connections:
-            print("FDJKS")
             await connection.send_text(message)
 
 

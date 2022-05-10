@@ -68,7 +68,7 @@ class Cryptocurrency(Base):
     crypto_info = Column(Text)
 
     def dumps(self):
-        values_to_dump = ("name", "symbol", "image_url", "time", "exchange_id", "price")
+        values_to_dump = ("name", "symbol", "image_url", "crypto_info")
         result = {key: getattr(self, key) for key in values_to_dump}
 
         return result
