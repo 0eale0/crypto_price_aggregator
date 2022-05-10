@@ -17,10 +17,10 @@ router = APIRouter()
 @router.get("/top_most_expensive_assets")
 def top_10_most_expensive(db: Session = Depends(get_session)):
     coins = [
-        c.dumps()
+        c
         for c in db.query(CoinPrice)
-            .order_by(desc(CoinPrice.price))
             .order_by(desc(CoinPrice.time))
+            .order_by(desc(CoinPrice.price))
             .limit(10)
             .all()
     ]
@@ -30,10 +30,10 @@ def top_10_most_expensive(db: Session = Depends(get_session)):
 @router.get("/top_cheapest_assets")
 def top_10_cheapest(db: Session = Depends(get_session)):
     coins = [
-        c.dumps()
+        c
         for c in db.query(CoinPrice)
-            .order_by(asc(CoinPrice.price))
-            .order_by(desc(CoinPrice.time))
+            .order_by(asc(CoinPrice.time))
+            .order_by(desc(CoinPrice.price))
             .limit(10)
             .all()
     ]
