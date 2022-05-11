@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse
 
-from api.services.db_services import get_session, create_new_user
+from app.api.services.db_services import get_session, create_new_user
 from app.models.forms import crud
 from app.models.domain import users
 

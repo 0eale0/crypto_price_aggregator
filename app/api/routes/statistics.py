@@ -89,7 +89,8 @@ def delete_favourite_crypto_in_db(request: Request, form: NameFavouriteCryptoFor
         if user:
             if form.name_crypto:
                 coin = db.query(Cryptocurrency).filter(Cryptocurrency.symbol == form.name_crypto).first()
-                user_with_fav_crypto = db.query(UserFavouriteCrypto).filter(UserFavouriteCrypto.user_id == user.id).filter(UserFavouriteCrypto.coin_id == coin.id).first()
+                user_with_fav_crypto = db.query(UserFavouriteCrypto).filter(
+                    UserFavouriteCrypto.user_id == user.id).filter(UserFavouriteCrypto.coin_id == coin.id).first()
                 db.delete(user_with_fav_crypto)
                 db.commit()
                 return user_with_fav_crypto
@@ -117,3 +118,10 @@ def get_favourite_crypto_in_db(request: Request, db: Session = Depends(get_sessi
         )
     except Exception as e:
         return str(e)
+
+
+
+@router.get("/charts/{symbol}")
+def show_charts(symbol: str) -> List[Dict]:
+    avg_prices = get_symbol_avg_price_by_day(symbol)
+    return avg_prices
