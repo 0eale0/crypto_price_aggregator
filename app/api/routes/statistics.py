@@ -140,6 +140,7 @@ def add_price_for_recommendations(request: Request, form: MaxPriceCryptoForm):
     """
     🤢🤢🤢🤢🤢🤢🤢🤢🤢
     """
+    # TODO переписать в ORM, сделать проверку текущего юзера через токен
     try:
         current_user = request.session.get("user")
         if current_user:
