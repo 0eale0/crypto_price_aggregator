@@ -1,12 +1,11 @@
-import datetime
+from typing import List, Dict
 from starlette.requests import Request
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
 from app.api.services.db_services import get_session
-from app.models.domain.users import CoinPrice
 from app.core.queries import min_max_average_price_by_exchange_for_each
-from app.api.services.statistics_services import get_aggregated_prices
+from app.api.services.statistics_services import get_aggregated_prices, get_symbol_avg_price_by_day
 from app.models.domain.users import CoinPrice, UserFavouriteCrypto, Cryptocurrency, User
 from app.models.forms.users import NameFavouriteCryptoForm
 
@@ -53,7 +52,12 @@ def average_min_max_price_by_exchange():
         )
 
 @router.post("/add_favourite_crypto")
-def add_favourite_crypto_in_db(request: Request, form: NameFavouriteCryptoForm, db: Session = Depends(get_session)):
+def add_favourite_crypto_in_db(
+        request: Request,
+        form: NameFavouriteCryptoForm,
+        db: Session = Depends(get_session),
+
+):
     try:
         current_user = request.session.get("user")
         user = db.query(User).filter(User.username == current_user["username"]).first()
