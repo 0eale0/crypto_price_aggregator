@@ -79,4 +79,4 @@ class NameFavouriteCryptoForm(BaseModel):
 
 
 class MaxPriceCryptoForm(BaseModel):
-    price: str
+    price: int

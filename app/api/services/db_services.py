@@ -1,10 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
-
 from app.models.forms.users import RegistrationForm, ChangeDataForm
 from app.models.domain.users import User
-from app.models.schemas.users import UserInDB
 from app.api.services.auth_helpers import get_password_hash
 from app.core.config import Configuration
 
@@ -58,9 +56,3 @@ def change_user(current_user, new_user: ChangeDataForm, db: Session):
     db.commit()
     db.refresh(user)
     return user
-
-
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)

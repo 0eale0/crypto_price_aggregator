@@ -21,10 +21,6 @@ class User(BaseModel):
             "example": {
                 "username": "string",
                 "email": "your_email@gmail.com",
-                "disabled": True,
             }
         }
-
-
-class UserInDB(User):
-    hashed_password: str
+        orm_mode = True
