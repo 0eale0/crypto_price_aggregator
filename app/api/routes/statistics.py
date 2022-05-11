@@ -118,6 +118,7 @@ def get_favourite_crypto_in_db(request: Request, db: Session = Depends(get_sessi
         return str(e)
 
 
+# TO DO: выводить еще и названия монет
 @router.post("/add_price_for_recommendations")
 def add_price_for_recommendations(request: Request, form: MaxPriceCryptoForm, db: Session = Depends(get_session)):
     try:
