@@ -12,11 +12,22 @@ min_max_average_price_by_exchange_for_each = (
     " order by cp.coin_id"
 )
 
-recommendations = ("select"
-                   " c.symbol, avg(cp.price) price"
+recommendations = (
+    "select"
+    " c.symbol, avg(cp.price) price"
                    " from coin_price cp"
                    " join cryptocurrencies c on c.id = cp.coin_id"
                    " where current_date - cp.time <= interval '5 minutes' and cp.price<="
                    " group by c.symbol"
                    " order by price desc"
+)
+
+std_deviation = (
+    "select"
+    " c.symbol, avg(cp.price) avg_price, stddev(cp.price) std_dev"
+    " from coin_price cp"
+    " left join cryptocurrencies c on c.id = cp.coin_id"
+    " group by cp.coin_id, c.symbol"
+    " order by cp.coin_id"
+    " limit 10"
 )

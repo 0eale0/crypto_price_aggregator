@@ -1,12 +1,11 @@
-import datetime
-
 from starlette.requests import Request
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
+from sqlalchemy.sql.functions import func
 from app.api.services.db_services import get_session, engine
 from app.core.queries import min_max_average_price_by_exchange_for_each, recommendations
-from app.api.services.statistics_services import get_aggregated_prices
+from app.api.services.statistics_services import get_aggregated_prices, get_standard_deviations
 from app.models.domain.users import CoinPrice, UserFavouriteCrypto, Cryptocurrency, User
 from app.models.forms.users import NameFavouriteCryptoForm, MaxPriceCryptoForm
 
@@ -138,7 +137,7 @@ def get_favourite_crypto_in_db(request: Request, db: Session = Depends(get_sessi
 
 
 @router.post("/add_price_for_recommendations")
-def add_price_for_recommendations(request: Request, form: MaxPriceCryptoForm, db: Session = Depends(get_session)):
+def add_price_for_recommendations(request: Request, form: MaxPriceCryptoForm):
     """
     🤢🤢🤢🤢🤢🤢🤢🤢🤢
     """
@@ -148,15 +147,13 @@ def add_price_for_recommendations(request: Request, form: MaxPriceCryptoForm, db
         if current_user:
             conn = engine.connect()
             q = ("select"
-                 " c.symbol, avg(cp.price) price"
+                 " c.symbol, avg(cp.price) as price"
                  " from coin_price cp"
-                 " join cryptocurrencies c on c.id = cp.coin_id"
-                 " where current_date - cp.time <= interval '5 minutes' and "
-                 f" cp.price<={int(form.price)}"
-                 " group by c.symbol"
-                 " order by price desc"
-                 " limit 30"
-                 )
+                   " join cryptocurrencies c on c.id = cp.coin_id"
+                   f" where current_date - cp.time <= interval '5 minutes' and cp.price<={form.price}"
+                   " group by c.symbol"
+                   " order by price desc"
+)
             # today = datetime.date.today()
             # res = db.query(CoinPrice)\
             #     .join(Cryptocurrency)\
@@ -165,8 +162,7 @@ def add_price_for_recommendations(request: Request, form: MaxPriceCryptoForm, db
             #             )\
             #     .group_by(Cryptocurrency.symbol).order_by(desc(CoinPrice.price))
             get_recommendations = conn.execute(q)
-            print(get_recommendations)
-            return get_recommendations
+            return [r for r in get_recommendations]
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -175,3 +171,9 @@ def add_price_for_recommendations(request: Request, form: MaxPriceCryptoForm, db
         )
     except Exception as e:
         return str(e)
+
+
+@router.get("/standard_deviation")
+def std_deviation():
+    std_devs = get_standard_deviations()
+    return std_devs
