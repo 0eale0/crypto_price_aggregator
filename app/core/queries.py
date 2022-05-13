@@ -22,6 +22,7 @@ recommendations = (
                    " order by price desc"
 )
 
+# отклонение цены от среднего значения(средняя по всем биржами)
 std_deviation = (
     "select"
     " c.symbol, date(cp.time) date, avg(cp.price) avg_price, stddev(cp.price) std_dev"
