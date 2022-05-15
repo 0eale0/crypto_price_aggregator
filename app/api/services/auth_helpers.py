@@ -1,17 +1,22 @@
 from datetime import datetime, timedelta
 from typing import Optional
+
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 import os
 from dotenv import load_dotenv
+
 from app.api.services import db_services
 
 load_dotenv()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
 
 
 def verify_password(plain_password, hashed_password):
@@ -38,6 +43,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
-        to_encode, os.environ.get("SECRET_KEY"), algorithm=os.environ.get("ALGORITHM")
+        to_encode, SECRET_KEY, algorithm=ALGORITHM
     )
     return encoded_jwt
