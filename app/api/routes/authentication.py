@@ -89,7 +89,7 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
     return None
 
-@router.post("/login", response_model=Token)
+@router.post("/token", response_model=Token)
 async def login_for_access_token(
         request: Request,
         db: Session = Depends(get_session),
