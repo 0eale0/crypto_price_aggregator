@@ -14,15 +14,11 @@ router = APIRouter()
 
 # asc возрастающ
 
+
 @router.get("/top_most_expensive_assets")
 def top_10_most_expensive(db: Session = Depends(get_session)):
     coins = [
-        c
-        for c in db.query(CoinPrice)
-            .order_by(desc(CoinPrice.time))
-            .order_by(desc(CoinPrice.price))
-            .limit(10)
-            .all()
+        c for c in db.query(CoinPrice).order_by(desc(CoinPrice.time)).order_by(desc(CoinPrice.price)).limit(10).all()
     ]
     return coins
 
@@ -30,12 +26,7 @@ def top_10_most_expensive(db: Session = Depends(get_session)):
 @router.get("/top_cheapest_assets")
 def top_10_cheapest(db: Session = Depends(get_session)):
     coins = [
-        c
-        for c in db.query(CoinPrice)
-            .order_by(asc(CoinPrice.time))
-            .order_by(desc(CoinPrice.price))
-            .limit(10)
-            .all()
+        c for c in db.query(CoinPrice).order_by(asc(CoinPrice.time)).order_by(desc(CoinPrice.price)).limit(10).all()
     ]
     return coins
 
@@ -47,10 +38,8 @@ def average_min_max_price_by_exchange():
         prices = get_aggregated_prices(query)
         return prices
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_204_NO_CONTENT,
-            detail="Try again please"
-        )
+        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Try again please")
+
 
 @router.post("/add_favourite_crypto")
 def add_favourite_crypto_in_db(request: Request, form: NameFavouriteCryptoForm, db: Session = Depends(get_session)):
@@ -60,10 +49,7 @@ def add_favourite_crypto_in_db(request: Request, form: NameFavouriteCryptoForm, 
         if user:
             if form.name_crypto:
                 coin = db.query(Cryptocurrency).filter(Cryptocurrency.symbol == form.name_crypto).first()
-                user_with_fav_crypto = UserFavouriteCrypto(
-                    user_id=user.id,
-                    coin_id=coin.id
-                )
+                user_with_fav_crypto = UserFavouriteCrypto(user_id=user.id, coin_id=coin.id)
                 db.add(user_with_fav_crypto)
                 db.commit()
                 db.refresh(user_with_fav_crypto)
@@ -85,7 +71,12 @@ def delete_favourite_crypto_in_db(request: Request, form: NameFavouriteCryptoFor
         if user:
             if form.name_crypto:
                 coin = db.query(Cryptocurrency).filter(Cryptocurrency.symbol == form.name_crypto).first()
-                user_with_fav_crypto = db.query(UserFavouriteCrypto).filter(UserFavouriteCrypto.user_id == user.id).filter(UserFavouriteCrypto.coin_id == coin.id).first()
+                user_with_fav_crypto = (
+                    db.query(UserFavouriteCrypto)
+                    .filter(UserFavouriteCrypto.user_id == user.id)
+                    .filter(UserFavouriteCrypto.coin_id == coin.id)
+                    .first()
+                )
                 db.delete(user_with_fav_crypto)
                 db.commit()
                 return user_with_fav_crypto

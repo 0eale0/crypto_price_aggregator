@@ -89,11 +89,12 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
     return None
 
+
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-        request: Request,
-        db: Session = Depends(get_session),
-        form_data: OAuth2PasswordRequestForm = Depends(),
+    request: Request,
+    db: Session = Depends(get_session),
+    form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     """
     Logins through site system
@@ -107,20 +108,17 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token_expires = timedelta(
-        minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
-    )
-    access_token = auth_helpers.create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
+    access_token_expires = timedelta(minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")))
+    access_token = auth_helpers.create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.post("/change_data")
 async def change_data(
-        request: Request,
-        form: ChangeDataForm, db: Session = Depends(get_session),
-        user: User = Depends(get_current_active_user)
+    request: Request,
+    form: ChangeDataForm,
+    db: Session = Depends(get_session),
+    user: User = Depends(get_current_active_user),
 ):
     try:
         if user:
