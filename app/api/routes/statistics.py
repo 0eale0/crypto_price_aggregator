@@ -173,7 +173,7 @@ def add_price_for_recommendations(request: Request, form: MaxPriceCryptoForm):
         return str(e)
 
 
-@router.get("/standard_deviation")
-def std_deviation():
-    std_devs = get_standard_deviations()
+@router.get("/standard_deviation/{symbol}")
+def std_deviation(symbol: str):
+    std_devs = get_standard_deviations(symbol)
     return std_devs

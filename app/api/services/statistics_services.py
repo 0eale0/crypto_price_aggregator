@@ -1,17 +1,25 @@
 from app.models.domain.users import engine
-from app.core.queries import(min_max_average_price_by_exchange_for_each,
-                             recommendations,
-                             std_deviation)
 from typing import List, Dict
 
 
-def get_standard_deviations(query: str = std_deviation) -> List[Dict]:
+def get_standard_deviations(symbol: str) -> List[Dict]:
+    # отклонение цены от среднего значения(средняя по всем биржами)
+    std_deviation = (
+        "select"
+        " c.id, c.symbol, date(cp.time) date, avg(cp.price) avg_price, stddev(cp.price) std_dev"
+        " from coin_price cp"
+        " left join cryptocurrencies c on c.id = cp.coin_id"
+        f" where c.symbol='{symbol}'"
+        " group by cp.coin_id, c.symbol, c.id, date"
+        " order by cp.coin_id"
+)
     conn = engine.connect()
     try:
-        std_devs = conn.execute(query)
+        std_devs = conn.execute(std_deviation)
         return [r for r in std_devs]
     except Exception as e:
         return [{'error': str(e)}]
+
 
 def get_aggregated_prices(query: str) -> List[Dict]:
     conn = engine.connect()

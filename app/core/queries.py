@@ -21,13 +21,3 @@ recommendations = (
                    " group by c.symbol"
                    " order by price desc"
 )
-
-# отклонение цены от среднего значения(средняя по всем биржами)
-std_deviation = (
-    "select"
-    " c.symbol, date(cp.time) date, avg(cp.price) avg_price, stddev(cp.price) std_dev"
-    " from coin_price cp"
-    " left join cryptocurrencies c on c.id = cp.coin_id"
-    " group by cp.coin_id, c.symbol, date"
-    " order by cp.coin_id"
-)
