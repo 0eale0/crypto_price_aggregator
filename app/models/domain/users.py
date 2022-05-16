@@ -50,9 +50,7 @@ class Exchange(Base):
     url = Column(Text)
     country = Column(Text)
     image_url = Column(Text)
-    trust_score = Column(
-        BIGINT, CheckConstraint("trust_score > 0", name="positive_trust_score")
-    )
+    trust_score = Column(BIGINT, CheckConstraint("trust_score > 0", name="positive_trust_score"))
     coin_price = relationship(
         "CoinPrice",
         lazy="select",
@@ -98,9 +96,7 @@ class Post(Base):
     data = Column(Text)
 
     likes = relationship("Like", lazy="select", backref=backref("like", lazy="joined"))
-    posts_comments = relationship(
-        "PostsComment", lazy="select", backref=backref("posts_comments", lazy="joined")
-    )
+    posts_comments = relationship("PostsComment", lazy="select", backref=backref("posts_comments", lazy="joined"))
 
 
 class PostPicture(Base):
@@ -131,5 +127,6 @@ class PostTopics(Base):
     id = Column(BIGINT, primary_key=True)
     post_id = Column(BIGINT, ForeignKey("posts.id"))
     coin_id = Column(BIGINT, ForeignKey("cryptocurrencies.id"))
+
 
 # Base.metadata.create_all(engine)

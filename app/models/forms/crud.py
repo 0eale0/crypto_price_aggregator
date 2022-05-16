@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr, validator, NonNegativeInt
 from pydantic.schema import Optional, Dict
 import datetime
 
+
 class FormForCrud(BaseModel):
     class Config:
         orm_mode = True

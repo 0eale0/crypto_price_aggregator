@@ -79,19 +79,19 @@ class CryptoSiteApi(CryptoSiteApiInterface):
         session = users.session()
         exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
 
-        max_time_from_db = session.query(func.max(users.CoinPrice.time)) \
-            .filter_by(exchange_id=exchange_id) \
-            .first()[0]
+        max_time_from_db = session.query(func.max(users.CoinPrice.time)).filter_by(exchange_id=exchange_id).first()[0]
 
-        coins_and_prices_from_db = session.query(users.Cryptocurrency, users.CoinPrice) \
-            .join(users.Cryptocurrency) \
-            .order_by(users.CoinPrice.time).filter(users.CoinPrice.time == max_time_from_db)
+        coins_and_prices_from_db = (
+            session.query(users.Cryptocurrency, users.CoinPrice)
+            .join(users.Cryptocurrency)
+            .order_by(users.CoinPrice.time)
+            .filter(users.CoinPrice.time == max_time_from_db)
+        )
 
         result = []
 
         for coin in coins_and_prices_from_db:
-            coin_info = {"symbol": coin[0].symbol, "name": coin[0].name,
-                         "price": coin[1].price}
+            coin_info = {"symbol": coin[0].symbol, "name": coin[0].name, "price": coin[1].price}
             result.append(coin_info)
         return result
 
@@ -106,8 +106,9 @@ class CryptoSiteApi(CryptoSiteApiInterface):
                 exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
                 price = coin["price"]
 
-                coin_price_with_time = users.CoinPrice(coin_id=coin_id, exchange_id=exchange_id,
-                                                       price=price, time=time_for_coin)
+                coin_price_with_time = users.CoinPrice(
+                    coin_id=coin_id, exchange_id=exchange_id, price=price, time=time_for_coin
+                )
 
                 sess.add(coin_price_with_time)
 
@@ -125,8 +126,9 @@ class CryptoSiteApi(CryptoSiteApiInterface):
                     coin["crypto_info"] = coin_description
 
                     values_to_write_into_cryptocurrency_db = ["symbol", "name", "crypto_info"]
-                    info_for_write_into_cryptocurrency_db = {key: coin[key] for key in
-                                                             values_to_write_into_cryptocurrency_db}
+                    info_for_write_into_cryptocurrency_db = {
+                        key: coin[key] for key in values_to_write_into_cryptocurrency_db
+                    }
 
                     crypto_currency = users.Cryptocurrency(**info_for_write_into_cryptocurrency_db)
                     sess.add(crypto_currency)
