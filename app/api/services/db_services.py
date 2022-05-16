@@ -68,7 +68,9 @@ def change_user(user: User, new_user: ChangeDataForm, db: Session):
     return user
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db=Depends(get_session)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db=Depends(get_session)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
