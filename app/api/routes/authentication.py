@@ -13,7 +13,12 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from app.api.services.db_services import get_session, create_new_user, change_user, get_current_active_user
+from app.api.services.db_services import (
+    get_session,
+    create_new_user,
+    change_user,
+    get_current_active_user,
+)
 from app.models.schemas.tokens import Token
 from app.api.services import auth_helpers
 from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
@@ -108,8 +113,12 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token_expires = timedelta(minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")))
-    access_token = auth_helpers.create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    access_token_expires = timedelta(
+        minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    )
+    access_token = auth_helpers.create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
     return {"access_token": access_token, "token_type": "bearer"}
 
 

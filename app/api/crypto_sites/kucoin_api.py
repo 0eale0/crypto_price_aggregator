@@ -13,11 +13,15 @@ class KucoinAPI(CryptoSiteApi):
             async with aiohttp.ClientSession() as session:
                 url = "https://api.kucoin.com"
                 async with session.get(
-                    url + f"/api/v1/market/orderbook/level1?symbol={symbol.upper()}-USDT"
+                    url
+                    + f"/api/v1/market/orderbook/level1?symbol={symbol.upper()}-USDT"
                 ) as response:
                     json = await response.json()
                     data = json["data"]
-                    coin_info = {"symbol": symbol.upper(), "price": float(data["price"])}
+                    coin_info = {
+                        "symbol": symbol.upper(),
+                        "price": float(data["price"]),
+                    }
                     return coin_info
         except Exception:
             return

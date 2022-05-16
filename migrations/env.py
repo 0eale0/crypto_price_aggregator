@@ -13,7 +13,9 @@ load_dotenv()
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(config.config_ini_section, "sqlalchemy.url", Configuration.SQLALCHEMY_DATABASE_URL)
+config.set_section_option(
+    config.config_ini_section, "sqlalchemy.url", Configuration.SQLALCHEMY_DATABASE_URL
+)
 fileConfig(config.config_file_name)
 
 # Interpret the config file for Python logging.
