@@ -85,12 +85,11 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
             user = create_new_user(user_form, db, is_google=True)
 
-        request.session["user"] = user.dumps()
         return user
 
     return None
 
-@router.post("/token", response_model=Token)
+@router.post("/login", response_model=Token)
 async def login_for_access_token(
         request: Request,
         db: Session = Depends(get_session),
@@ -107,6 +106,7 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    request.session["user"] = user.dumps()
 
     access_token_expires = timedelta(
         minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
@@ -119,13 +119,13 @@ async def login_for_access_token(
 
 @router.post("/change_data")
 async def change_data(
-        request: Request, form: ChangeDataForm, db: Session = Depends(get_session)
+        request: Request,
+        form: ChangeDataForm, db: Session = Depends(get_session),
+        user: User = Depends(get_current_active_user)
 ):
     try:
-        user = request.session.get("user")
         if user:
             changed_user = change_user(user, form, db)
-            # request.session['user'] = changed_user
             return changed_user
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -138,10 +138,16 @@ async def change_data(
 
 @router.get("/logout")
 async def logout(request: Request):
-    request.session.pop("user", None)
     return RedirectResponse(url="/")
 
 
-@router.get("/home_page")
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
+@router.get("/")
+async def homepage(request: Request):
+    user = request.session.get("user")
+    if user:
+        return user
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not authorized",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
