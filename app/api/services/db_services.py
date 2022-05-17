@@ -122,9 +122,9 @@ def delete_favourite_coin(current_user: User, db: Session, coin: Cryptocurrency)
         .filter(UserFavouriteCrypto.coin_id == coin.id)
         .first()
     )
-    current_favourite_cryptos = user_favourite_cryptocurrency(current_user, db)
     db.delete(user_with_fav_crypto)
     db.commit()
+    current_favourite_cryptos = user_favourite_cryptocurrency(current_user, db)
     return current_favourite_cryptos
 
 
