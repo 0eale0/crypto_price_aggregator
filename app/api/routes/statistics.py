@@ -3,7 +3,7 @@ from starlette.requests import Request
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
-from app.api.services.db_services import get_session
+from app.api.services.db_services import get_session, get_current_active_user
 from app.core.queries import min_max_average_price_by_exchange_for_each
 from app.api.services.statistics_services import (
     get_aggregated_prices,
@@ -59,10 +59,10 @@ def average_min_max_price_by_exchange():
 def add_favourite_crypto_in_db(
     request: Request,
     form: NameFavouriteCryptoForm,
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_session),
 ):
     try:
-        current_user = request.session.get("user")
         user = db.query(User).filter(User.username == current_user["username"]).first()
         if user:
             if form.name_crypto:
@@ -89,11 +89,13 @@ def add_favourite_crypto_in_db(
 
 @router.post("/delete_favourite_crypto")
 def delete_favourite_crypto_in_db(
-    request: Request, form: NameFavouriteCryptoForm, db: Session = Depends(get_session)
+    request: Request,
+    form: NameFavouriteCryptoForm,
+    db: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user),
 ):
     try:
-        current_user = request.session.get("user")
-        user = db.query(User).filter(User.username == current_user["username"]).first()
+        user = db.query(User).filter(User.username == current_user.username).first()
         if user:
             if form.name_crypto:
                 coin = (
@@ -120,9 +122,12 @@ def delete_favourite_crypto_in_db(
 
 
 @router.get("/get_favourite_crypto")
-def get_favourite_crypto_in_db(request: Request, db: Session = Depends(get_session)):
+def get_favourite_crypto_in_db(
+    request: Request,
+    db: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user),
+):
     try:
-        current_user = request.session.get("user")
         user = db.query(User).filter(User.username == current_user["username"]).first()
         if user:
             user_with_fav_crypto = (

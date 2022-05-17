@@ -92,7 +92,7 @@ async def auth(request: Request, db: Session = Depends(get_session)):
     return None
 
 
-@router.post("/login", response_model=Token)
+@router.post("/token", response_model=Token)
 async def login_for_access_token(
     request: Request,
     db: Session = Depends(get_session),
@@ -128,7 +128,6 @@ async def change_data(
         user = request.session.get("user")
         if user:
             changed_user = change_user(user, form, db)
-            # request.session['user'] = changed_user
             return changed_user
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

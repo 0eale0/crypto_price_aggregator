@@ -1,15 +1,22 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
-
+from fastapi import Depends, HTTPException, status
 from app.models.forms.users import RegistrationForm, ChangeDataForm
 from app.models.domain.users import User
+from app.models.schemas.tokens import TokenData
 from app.models.schemas.users import UserInDB
-from app.api.services.auth_helpers import get_password_hash
+from app.api.services.auth_helpers import get_password_hash, oauth2_scheme
 from app.core.config import Configuration
+from jose import jwt, JWTError
+import os
+
 
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
 
 
 def get_session():
@@ -64,3 +71,29 @@ def get_user(db, username: str):
     if username in db:
         user_dict = db[username]
         return UserInDB(**user_dict)
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db=Depends(get_session)
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = find_user_by_username(db=db, username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+async def get_current_active_user(current_user=Depends(get_current_user)):
+    return current_user
