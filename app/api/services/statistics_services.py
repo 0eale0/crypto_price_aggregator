@@ -1,4 +1,4 @@
-from app.models.domain.users import engine
+from models.domain.users import engine
 from typing import List, Dict
 
 

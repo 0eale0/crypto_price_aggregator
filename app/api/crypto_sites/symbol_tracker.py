@@ -3,7 +3,7 @@ from pprint import pprint
 
 import aiohttp
 
-from app.api.services.api_config import symbols_for_tracker
+from api.services.api_config import symbols_for_tracker
 
 
 class SymbolsTracker:
