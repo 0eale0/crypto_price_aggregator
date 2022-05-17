@@ -30,6 +30,7 @@ class User(Base):
     favourites_crypto = relationship("UserFavouriteCrypto", lazy="select")
     posts = relationship("Post", lazy="select", backref=backref("posts", lazy="joined"))
     likes = relationship("Like", lazy="select", backref=backref("likes", lazy="joined"))
+    is_admin = Column(Boolean, default=False)
 
     def dumps(self):
         result = {"username": self.username, "email": self.email}
@@ -119,6 +120,13 @@ class PostsComment(Base):
     user_id = Column(BIGINT, ForeignKey("users.id"))
     post_id = Column(BIGINT, ForeignKey("posts.id"))
     data = Column(String(100))
+
+
+class PostTopics(Base):
+    __tablename__ = "post_topics"
+    id = Column(BIGINT, primary_key=True)
+    post_id = Column(BIGINT, ForeignKey("posts.id"))
+    coin_id = Column(BIGINT, ForeignKey("cryptocurrencies.id"))
 
 
 # Base.metadata.create_all(engine)

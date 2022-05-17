@@ -1,3 +1,7 @@
+import os
+
+from fastapi import Depends, HTTPException
+from jose import jwt, JWTError
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
@@ -11,6 +15,14 @@ from app.core.config import Configuration
 from jose import jwt, JWTError
 import os
 
+from starlette import status
+
+from app.models.forms.users import RegistrationForm, ChangeDataForm
+from app.models.domain.users import User
+from app.models.schemas.users import UserInDB
+from app.api.services.auth_helpers import get_password_hash, oauth2_scheme
+from app.core.config import Configuration
+from models.schemas.tokens import TokenData
 
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -54,8 +66,7 @@ def create_new_user(user: RegistrationForm, db: Session, is_google=False):
     return user
 
 
-def change_user(current_user, new_user: ChangeDataForm, db: Session):
-    user = db.query(User).filter(User.username == current_user["username"]).first()
+def change_user(user: User, new_user: ChangeDataForm, db: Session):
 
     if new_user.username and not user.is_google:
         user.username = new_user.username
