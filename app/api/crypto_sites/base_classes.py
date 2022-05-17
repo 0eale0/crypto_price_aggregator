@@ -79,19 +79,27 @@ class CryptoSiteApi(CryptoSiteApiInterface):
         session = users.session()
         exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
 
-        max_time_from_db = session.query(func.max(users.CoinPrice.time)) \
-            .filter_by(exchange_id=exchange_id) \
+        max_time_from_db = (
+            session.query(func.max(users.CoinPrice.time))
+            .filter_by(exchange_id=exchange_id)
             .first()[0]
+        )
 
-        coins_and_prices_from_db = session.query(users.Cryptocurrency, users.CoinPrice) \
-            .join(users.Cryptocurrency) \
-            .order_by(users.CoinPrice.time).filter(users.CoinPrice.time == max_time_from_db)
+        coins_and_prices_from_db = (
+            session.query(users.Cryptocurrency, users.CoinPrice)
+            .join(users.Cryptocurrency)
+            .order_by(users.CoinPrice.time)
+            .filter(users.CoinPrice.time == max_time_from_db)
+        )
 
         result = []
 
         for coin in coins_and_prices_from_db:
-            coin_info = {"symbol": coin[0].symbol, "name": coin[0].name,
-                         "price": coin[1].price}
+            coin_info = {
+                "symbol": coin[0].symbol,
+                "name": coin[0].name,
+                "price": coin[1].price,
+            }
             result.append(coin_info)
         return result
 
@@ -102,12 +110,21 @@ class CryptoSiteApi(CryptoSiteApiInterface):
         time_for_coin = datetime.now(timezone.utc)
         with session as sess:
             for coin in result:
-                coin_id = sess.query(Cryptocurrency).filter_by(symbol=coin["symbol"]).first().id
+                coin_id = (
+                    sess.query(Cryptocurrency)
+                    .filter_by(symbol=coin["symbol"])
+                    .first()
+                    .id
+                )
                 exchange_id = session.query(Exchange).filter_by(name=self.name).one().id
                 price = coin["price"]
 
-                coin_price_with_time = users.CoinPrice(coin_id=coin_id, exchange_id=exchange_id,
-                                                       price=price, time=time_for_coin)
+                coin_price_with_time = users.CoinPrice(
+                    coin_id=coin_id,
+                    exchange_id=exchange_id,
+                    price=price,
+                    time=time_for_coin,
+                )
 
                 sess.add(coin_price_with_time)
 
@@ -118,17 +135,26 @@ class CryptoSiteApi(CryptoSiteApiInterface):
 
         with session as sess:
             for coin in coins:
-                coin_from_db = sess.query(Cryptocurrency).filter_by(symbol=coin["symbol"]).first()
+                coin_from_db = (
+                    sess.query(Cryptocurrency).filter_by(symbol=coin["symbol"]).first()
+                )
                 if not coin_from_db:
                     coin["name"] = coin["name"].lower()
                     coin_description = await get_coin_description(coin["name"])
                     coin["crypto_info"] = coin_description
 
-                    values_to_write_into_cryptocurrency_db = ["symbol", "name", "crypto_info"]
-                    info_for_write_into_cryptocurrency_db = {key: coin[key] for key in
-                                                             values_to_write_into_cryptocurrency_db}
+                    values_to_write_into_cryptocurrency_db = [
+                        "symbol",
+                        "name",
+                        "crypto_info",
+                    ]
+                    info_for_write_into_cryptocurrency_db = {
+                        key: coin[key] for key in values_to_write_into_cryptocurrency_db
+                    }
 
-                    crypto_currency = users.Cryptocurrency(**info_for_write_into_cryptocurrency_db)
+                    crypto_currency = users.Cryptocurrency(
+                        **info_for_write_into_cryptocurrency_db
+                    )
                     sess.add(crypto_currency)
 
                     sess.commit()

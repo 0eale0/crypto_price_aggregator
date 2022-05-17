@@ -94,9 +94,9 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(
-        request: Request,
-        db: Session = Depends(get_session),
-        form_data: OAuth2PasswordRequestForm = Depends(),
+    request: Request,
+    db: Session = Depends(get_session),
+    form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     """
     Logins through site system
@@ -122,7 +122,7 @@ async def login_for_access_token(
 
 @router.post("/change_data")
 async def change_data(
-        request: Request, form: ChangeDataForm, db: Session = Depends(get_session)
+    request: Request, form: ChangeDataForm, db: Session = Depends(get_session)
 ):
     try:
         user = request.session.get("user")

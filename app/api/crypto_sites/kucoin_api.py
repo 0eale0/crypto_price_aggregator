@@ -18,7 +18,10 @@ class KucoinAPI(CryptoSiteApi):
                 ) as response:
                     json = await response.json()
                     data = json["data"]
-                    coin_info = {"symbol": symbol.upper(), "price": float(data["price"])}
+                    coin_info = {
+                        "symbol": symbol.upper(),
+                        "price": float(data["price"]),
+                    }
                     return coin_info
         except Exception:
             return

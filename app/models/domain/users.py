@@ -124,4 +124,5 @@ class PostsComment(Base):
     post_id = Column(BIGINT, ForeignKey("posts.id"))
     data = Column(String(100))
 
+
 # Base.metadata.create_all(engine)
