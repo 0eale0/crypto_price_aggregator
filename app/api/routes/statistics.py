@@ -3,14 +3,21 @@ from starlette.requests import Request
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
-from app.api.services.db_services import get_session, get_current_active_user
+from app.api.services.db_services import (
+    get_session,
+    get_current_active_user,
+    user_favourite_cryptocurrency,
+    get_cryptocurrency,
+    delete_favourite_coin,
+    update_favourites_coins,
+)
 from app.core.queries import min_max_average_price_by_exchange_for_each
 from app.api.services.statistics_services import (
     get_aggregated_prices,
     get_symbol_avg_price_by_day,
 )
 from app.models.domain.users import CoinPrice, UserFavouriteCrypto, Cryptocurrency, User
-from app.models.forms.users import NameFavouriteCryptoForm
+from app.models.forms.users import NameCryptoForm
 
 router = APIRouter()
 
@@ -57,27 +64,15 @@ def average_min_max_price_by_exchange():
 
 @router.post("/add_favourite_crypto")
 def add_favourite_crypto_in_db(
-    request: Request,
-    form: NameFavouriteCryptoForm,
+    form: NameCryptoForm,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_session),
 ):
     try:
-        user = db.query(User).filter(User.username == current_user.username).first()
-        if user:
+        if current_user:
             if form.name_crypto:
-                coin = (
-                    db.query(Cryptocurrency)
-                    .filter(Cryptocurrency.symbol == form.name_crypto)
-                    .first()
-                )
-                user_with_fav_crypto = UserFavouriteCrypto(
-                    user_id=user.id, coin_id=coin.id
-                )
-                db.add(user_with_fav_crypto)
-                db.commit()
-                db.refresh(user_with_fav_crypto)
-                return user_with_fav_crypto
+                coin = get_cryptocurrency(db, form)
+                return update_favourites_coins(current_user, coin, db)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authorized",
@@ -89,28 +84,15 @@ def add_favourite_crypto_in_db(
 
 @router.post("/delete_favourite_crypto")
 def delete_favourite_crypto_in_db(
-    request: Request,
-    form: NameFavouriteCryptoForm,
+    form: NameCryptoForm,
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user),
 ):
     try:
-        user = db.query(User).filter(User.username == current_user.username).first()
-        if user:
+        if current_user:
             if form.name_crypto:
-                coin = (
-                    db.query(Cryptocurrency)
-                    .filter(Cryptocurrency.symbol == form.name_crypto)
-                    .first()
-                )
-                user_with_fav_crypto = (
-                    db.query(UserFavouriteCrypto)
-                    .filter(UserFavouriteCrypto.user_id == user.id)
-                    .filter(UserFavouriteCrypto.coin_id == coin.id)
-                    .first()
-                )
-                db.delete(user_with_fav_crypto)
-                db.commit()
+                coin = get_cryptocurrency(db, form)
+                user_with_fav_crypto = delete_favourite_coin(current_user, db, coin)
                 return user_with_fav_crypto
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -123,18 +105,12 @@ def delete_favourite_crypto_in_db(
 
 @router.get("/get_favourite_crypto")
 def get_favourite_crypto_in_db(
-    request: Request,
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user),
 ):
     try:
-        user = db.query(User).filter(User.username == current_user.username).first()
-        if user:
-            user_with_fav_crypto = (
-                db.query(UserFavouriteCrypto)
-                .filter(user.id == UserFavouriteCrypto.user_id)
-                .all()
-            )
+        if current_user:
+            user_with_fav_crypto = user_favourite_cryptocurrency(current_user, db)
             return user_with_fav_crypto
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

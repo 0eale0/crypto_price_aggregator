@@ -2,8 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
-from app.models.forms.users import RegistrationForm, ChangeDataForm
-from app.models.domain.users import User
+from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
+from app.models.domain.users import User, UserFavouriteCrypto, Cryptocurrency
 from app.models.schemas.tokens import TokenData
 from app.models.schemas.users import UserInDB
 from app.api.services.auth_helpers import get_password_hash, oauth2_scheme
@@ -97,3 +97,41 @@ async def get_current_user(
 
 async def get_current_active_user(current_user=Depends(get_current_user)):
     return current_user
+
+
+def user_favourite_cryptocurrency(current_user: User, db: Session):
+    return (
+        db.query(UserFavouriteCrypto)
+        .filter(UserFavouriteCrypto.user_id == current_user.id)
+        .all()
+    )
+
+
+def get_cryptocurrency(db: Session, form: NameCryptoForm):
+    return (
+        db.query(Cryptocurrency)
+        .filter(Cryptocurrency.symbol == form.name_crypto)
+        .first()
+    )
+
+
+def delete_favourite_coin(current_user: User, db: Session, coin: Cryptocurrency):
+    user_with_fav_crypto = (
+        db.query(UserFavouriteCrypto)
+        .filter(UserFavouriteCrypto.user_id == current_user.id)
+        .filter(UserFavouriteCrypto.coin_id == coin.id)
+        .first()
+    )
+    current_favourite_cryptos = user_favourite_cryptocurrency(current_user, db)
+    db.delete(user_with_fav_crypto)
+    db.commit()
+    return current_favourite_cryptos
+
+
+def update_favourites_coins(current_user: User, coin: Cryptocurrency, db: Session):
+    user_with_fav_crypto = UserFavouriteCrypto(user_id=current_user.id, coin_id=coin.id)
+    db.add(user_with_fav_crypto)
+    db.commit()
+    db.refresh(user_with_fav_crypto)
+    favourites = user_favourite_cryptocurrency(current_user, db)
+    return favourites

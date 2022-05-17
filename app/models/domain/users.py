@@ -27,11 +27,7 @@ class User(Base):
     username = Column(Text, unique=True)
     hashed_password = Column(Text)
     is_google = Column(Boolean)
-    favourites_crypto = relationship(
-        "UserFavouriteCrypto",
-        lazy="select",
-        backref=backref("users_fav_crypto", lazy="joined"),
-    )
+    favourites_crypto = relationship("UserFavouriteCrypto", lazy="select")
     posts = relationship("Post", lazy="select", backref=backref("posts", lazy="joined"))
     likes = relationship("Like", lazy="select", backref=backref("likes", lazy="joined"))
 
