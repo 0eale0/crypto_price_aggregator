@@ -63,7 +63,7 @@ def add_favourite_crypto_in_db(
     db: Session = Depends(get_session),
 ):
     try:
-        user = db.query(User).filter(User.username == current_user["username"]).first()
+        user = db.query(User).filter(User.username == current_user.username).first()
         if user:
             if form.name_crypto:
                 coin = (
@@ -128,7 +128,7 @@ def get_favourite_crypto_in_db(
     current_user: User = Depends(get_current_active_user),
 ):
     try:
-        user = db.query(User).filter(User.username == current_user["username"]).first()
+        user = db.query(User).filter(User.username == current_user.username).first()
         if user:
             user_with_fav_crypto = (
                 db.query(UserFavouriteCrypto)
