@@ -5,10 +5,10 @@ from datetime import datetime, timezone
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
-from app.api.crypto_sites.coingecko_api import get_coin_description
-from app.api.crypto_sites.symbol_tracker import SymbolsTracker
-from app.models.domain import users
-from app.models.domain.users import Exchange, Cryptocurrency, CoinPrice
+from api.crypto_sites.coingecko_api import get_coin_description
+from api.crypto_sites.symbol_tracker import SymbolsTracker
+from models.domain import users
+from models.domain.users import Exchange, Cryptocurrency, CoinPrice
 
 
 class CryptoSiteApiInterface(ABC):

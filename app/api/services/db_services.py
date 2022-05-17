@@ -6,22 +6,22 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
-from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
-from app.models.domain.users import User, UserFavouriteCrypto, Cryptocurrency
-from app.models.schemas.tokens import TokenData
-from app.models.schemas.users import UserInDB
-from app.api.services.auth_helpers import get_password_hash, oauth2_scheme
-from app.core.config import Configuration
+from models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
+from models.domain.users import User, UserFavouriteCrypto, Cryptocurrency
+from models.schemas.tokens import TokenData
+from models.schemas.users import UserInDB
+from api.services.auth_helpers import get_password_hash, oauth2_scheme
+from core.config import Configuration
 from jose import jwt, JWTError
 import os
 
 from starlette import status
 
-from app.models.forms.users import RegistrationForm, ChangeDataForm
-from app.models.domain.users import User
-from app.models.schemas.users import UserInDB
-from app.api.services.auth_helpers import get_password_hash, oauth2_scheme
-from app.core.config import Configuration
+from models.forms.users import RegistrationForm, ChangeDataForm
+from models.domain.users import User
+from models.schemas.users import UserInDB
+from api.services.auth_helpers import get_password_hash, oauth2_scheme
+from core.config import Configuration
 from models.schemas.tokens import TokenData
 
 engine = create_engine(Configuration.SQLALCHEMY_DATABASE_URL)

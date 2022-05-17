@@ -11,7 +11,7 @@ from sqlalchemy import (
     TIMESTAMP,
 )
 from sqlalchemy.ext.declarative import declarative_base
-from app.core.config import Configuration
+from core.config import Configuration
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship, backref, sessionmaker
 

@@ -1,7 +1,7 @@
-from app.api.crypto_sites.ftx_api import FTXApi
-from app.api.crypto_sites.kucoin_api import KucoinAPI
-from app.api.crypto_sites.binance_api import BinanceAPI
-from app.api.crypto_sites.base_classes import CryptoSitesApi
+from api.crypto_sites.ftx_api import FTXApi
+from api.crypto_sites.kucoin_api import KucoinAPI
+from api.crypto_sites.binance_api import BinanceAPI
+from api.crypto_sites.base_classes import CryptoSitesApi
 
 ftx_api = FTXApi()
 kucoin_api = KucoinAPI()
