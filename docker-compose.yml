@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  fastapi-app:
+    image: docker-fastapi:latest
+    build:
+      context: .
+      dockerfile: deploy/python/Dockerfile
+    restart: always
+    ports:
+      - 8000:8000
+    depends_on:
+      - fastapi-db
+    environment:
+      DB_HOSTNAME: fastapi-db
+      DB_PASSWORD:
+    volumes:
+      - static:/app/static
+
+  fastapi-db:
+    image: postgres:13-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD:
+
+volumes:
+  static:
