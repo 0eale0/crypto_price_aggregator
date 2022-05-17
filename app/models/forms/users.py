@@ -72,3 +72,7 @@ class ChangeDataForm(BaseModel):
 
 class NameCryptoForm(BaseModel):
     name_crypto: str
+
+
+class DollarsMaxAmount(BaseModel):
+    amount_of_money: int
