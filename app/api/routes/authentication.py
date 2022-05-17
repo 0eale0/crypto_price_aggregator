@@ -97,7 +97,6 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    request: Request,
     db: Session = Depends(get_session),
     form_data: OAuth2PasswordRequestForm = Depends(),
 ):
@@ -124,7 +123,6 @@ async def login_for_access_token(
 
 @router.post("/change_data")
 async def change_data(
-    request: Request,
     form: ChangeDataForm,
     db: Session = Depends(get_session),
     user: User = Depends(get_current_active_user),
@@ -140,11 +138,6 @@ async def change_data(
         )
     except Exception as e:
         return str(e)
-
-
-@router.get("/logout")
-async def logout(request: Request):
-    return RedirectResponse(url="/")
 
 
 @router.get("/home_page")
