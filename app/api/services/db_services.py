@@ -78,12 +78,6 @@ def change_user(user: User, new_user: ChangeDataForm, db: Session):
     return user
 
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
-
-
 async def get_current_user(
     token: str = Depends(oauth2_scheme), db=Depends(get_session)
 ):
