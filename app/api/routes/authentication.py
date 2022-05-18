@@ -2,27 +2,27 @@ import os
 from datetime import timedelta
 
 from fastapi import Depends, HTTPException, status, APIRouter
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from api.services.db_services import (
+from app.api.services.db_services import (
     get_session,
     create_new_user,
     change_user,
     get_current_active_user,
 )
-from models.schemas.tokens import Token
-from api.services import auth_helpers
-from models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
-from models.domain.users import User
+from app.models.schemas.tokens import Token
+from app.api.services import auth_helpers
+from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
+from app.models.domain.users import User
 
 router = APIRouter()
 

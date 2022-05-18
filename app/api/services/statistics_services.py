@@ -1,4 +1,4 @@
-from models.domain.users import engine
+from app.models.domain.users import engine
 from typing import List, Dict
 from fastapi import Depends
 from sqlalchemy.engine.base import Connection
