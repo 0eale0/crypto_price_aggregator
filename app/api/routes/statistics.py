@@ -10,13 +10,14 @@ from app.api.services.db_services import (
     delete_favourite_coin,
     update_favourites_coins,
 )
-from core.queries import min_max_average_price_by_exchange_for_each
-from api.services.statistics_services import (
+from app.core.queries import min_max_average_price_by_exchange_for_each
+from app.api.services.statistics_services import (
     get_aggregated_prices,
     get_symbol_avg_price_by_day,
+    get_recommendations,
 )
 from app.models.domain.users import CoinPrice, User
-from app.models.forms.users import NameCryptoForm
+from app.models.forms.users import NameCryptoForm, DollarsMaxAmount
 
 router = APIRouter()
 
@@ -111,3 +112,16 @@ def get_favourite_crypto_in_db(
 def show_charts(symbol: str) -> List[Dict]:
     avg_prices = get_symbol_avg_price_by_day(symbol)
     return avg_prices
+
+
+@router.post("/recommendations")
+def recommendations(
+    form: DollarsMaxAmount, current_user: User = Depends(get_current_active_user)
+):
+    """
+    🤢🤢🤢🤢🤢🤢🤢🤢🤢
+    """
+    try:
+        return get_recommendations(form)
+    except Exception:
+        raise UnauthorizedException

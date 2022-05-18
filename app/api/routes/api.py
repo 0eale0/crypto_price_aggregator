@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
-from api.routes import coin
-from api.routes import authentication
-from api.routes import crypto_websockets
-from api.routes import crud
-from api.routes import statistics
+from app.api.routes import coin
+from app.api.routes import authentication
+from app.api.routes import crypto_websockets
+from app.api.routes import crud
+from app.api.routes import statistics
 
 router = APIRouter()
 

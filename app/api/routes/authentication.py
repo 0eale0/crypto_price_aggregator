@@ -2,27 +2,27 @@ import os
 from datetime import timedelta
 
 from fastapi import Depends, HTTPException, status, APIRouter
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from api.services.db_services import (
+from app.api.services.db_services import (
     get_session,
     create_new_user,
     change_user,
     get_current_active_user,
 )
-from models.schemas.tokens import Token
-from api.services import auth_helpers
-from models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
-from models.domain.users import User
+from app.models.schemas.tokens import Token
+from app.api.services import auth_helpers
+from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
+from app.models.domain.users import User
 
 router = APIRouter()
 
@@ -97,7 +97,6 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    request: Request,
     db: Session = Depends(get_session),
     form_data: OAuth2PasswordRequestForm = Depends(),
 ):
@@ -124,7 +123,6 @@ async def login_for_access_token(
 
 @router.post("/change_data")
 async def change_data(
-    request: Request,
     form: ChangeDataForm,
     db: Session = Depends(get_session),
     user: User = Depends(get_current_active_user),
@@ -140,11 +138,6 @@ async def change_data(
         )
     except Exception as e:
         return str(e)
-
-
-@router.get("/logout")
-async def logout(request: Request):
-    return RedirectResponse(url="/")
 
 
 @router.get("/home_page")

@@ -3,8 +3,8 @@ from fastapi import Depends, HTTPException, status, APIRouter
 
 from starlette.requests import Request
 
-from models.forms.users import NameCryptoForm
-from api.crypto_sites.coingecko_api import get_coin_description
+from app.models.forms.users import NameCryptoForm
+from app.api.crypto_sites.coingecko_api import get_coin_description
 
 
 router = APIRouter()

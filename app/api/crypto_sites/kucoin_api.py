@@ -1,4 +1,4 @@
-from api.crypto_sites.base_classes import CryptoSiteApi
+from app.api.crypto_sites.base_classes import CryptoSiteApi
 import aiohttp
 import asyncio
 from pprint import pprint
