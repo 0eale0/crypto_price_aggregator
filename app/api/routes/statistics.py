@@ -26,7 +26,6 @@ UnauthorizedException = HTTPException(
     detail="Not authorized",
     headers={"WWW-Authenticate": "Bearer"},
 )
-# asc возрастающ
 
 
 @router.get("/top_most_expensive_assets")
