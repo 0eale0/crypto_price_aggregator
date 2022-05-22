@@ -11,7 +11,7 @@ from sqlalchemy import (
     TIMESTAMP,
 )
 from sqlalchemy.ext.declarative import declarative_base
-from core.config import Configuration
+from app.core.config import Configuration
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship, backref, sessionmaker
 
@@ -102,9 +102,8 @@ class Post(Base):
 class PostPicture(Base):
     __tablename__ = "post_pictures"
     id = Column(BIGINT, primary_key=True)
-    post_id = Column(BIGINT, ForeignKey("posts.id"), primary_key=True)
+    post_id = Column(BIGINT, ForeignKey("posts.id"))
     picture_url = Column(Text)
-    post = relationship("Post")
 
 
 class Like(Base):

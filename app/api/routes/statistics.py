@@ -10,8 +10,8 @@ from app.api.services.db_services import (
     delete_favourite_coin,
     update_favourites_coins,
 )
-from core.queries import min_max_average_price_by_exchange_for_each
-from api.services.statistics_services import (
+from app.core.queries import min_max_average_price_by_exchange_for_each
+from app.api.services.statistics_services import (
     get_aggregated_prices,
     get_symbol_avg_price_by_day,
     get_recommendations,

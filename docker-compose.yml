@@ -1,6 +1,17 @@
 version: '3.9'
 
 services:
+
+  fastapi-db:
+    image: postgres:13-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: fastapi-db
+      POSTGRES_PASSWORD: 123
+
   fastapi-app:
     image: docker-fastapi:latest
     build:
@@ -13,18 +24,15 @@ services:
       - fastapi-db
     environment:
       DB_HOSTNAME: fastapi-db
-      DB_PASSWORD:
+      DB_PASSWORD: 123
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      ALGORITHM: HS256
+
+      SECRET_KEY:     # Any secret key for jwt token
+      GOOGLE_CLIENT_ID:  # Google client_id for oauth2
+      GOOGLE_CLIENT_SECRET:   # Google client secret for oauth2
     volumes:
       - static:/app/static
-
-  fastapi-db:
-    image: postgres:13-alpine
-    ports:
-      - 5432:5432
-    volumes:
-      - ./db:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD:
 
 volumes:
   static:

@@ -10,3 +10,5 @@ class Configuration:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     DEBUG = True
     SECRET_KEY = "ekjhrkgwkhjsdghkt"
+
+    print(SQLALCHEMY_DATABASE_URL)

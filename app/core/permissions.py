@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 
-from api.services.db_services import get_current_active_user
-from models.domain.users import User
+from app.api.services.db_services import get_current_active_user
+from app.models.domain.users import User
 
 
 def is_admin(current_user: User = Depends(get_current_active_user)):
