@@ -47,8 +47,8 @@ def top_10_cheapest(db: Session = Depends(get_session)):
     coins = [
         c
         for c in db.query(CoinPrice)
-        .order_by(asc(CoinPrice.time))
-        .order_by(desc(CoinPrice.price))
+        .order_by(desc(CoinPrice.time))
+        .order_by(asc(CoinPrice.price))
         .limit(10)
         .all()
     ]
