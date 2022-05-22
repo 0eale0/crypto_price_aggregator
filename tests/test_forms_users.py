@@ -1,5 +1,4 @@
 import pytest
-
 from app.models.forms.users import UserValidation, RegistrationForm, ChangeDataForm
 
 
