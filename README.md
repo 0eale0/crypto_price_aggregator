@@ -66,3 +66,11 @@ You can also install FastAPI app locally using Poetry(`pip install poetry` if yo
 - `alembic init migrations` - инициализируем alembic
 - `alembic revision --autogenerate -m "Added required tables"` - генерируем миграции
 - `alembic upgrade head` - обновляем таблицы
+
+
+**Docker**
+
+-  Внести переменные окружения в docker-compose.yml
+- `docker-compose up` - Запуск проекта через докер
+- `docker-compose stop` - Остановка
+
