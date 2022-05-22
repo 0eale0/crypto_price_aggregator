@@ -18,6 +18,8 @@ from api.services.statistics_services import (
 )
 from app.models.domain.users import CoinPrice, User
 from app.models.forms.users import NameCryptoForm, DollarsMaxAmount
+from app.api.services.statistics_services import get_standard_deviations
+
 
 router = APIRouter()
 
@@ -125,3 +127,9 @@ def recommendations(
         return get_recommendations(form)
     except Exception:
         raise UnauthorizedException
+
+
+@router.get("/standard_deviation/{symbol}")
+def std_deviation(symbol: str):
+    std_devs = get_standard_deviations(symbol)
+    return std_devs
