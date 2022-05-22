@@ -11,7 +11,11 @@ from starlette import status
 
 from app.models.forms.users import RegistrationForm, ChangeDataForm
 from app.models.domain.users import User
-from app.api.services.auth_helpers import get_password_hash, oauth2_scheme, verify_password
+from app.api.services.auth_helpers import (
+    get_password_hash,
+    oauth2_scheme,
+    verify_password,
+)
 from app.core.config import Configuration
 from app.models.schemas.tokens import TokenData
 

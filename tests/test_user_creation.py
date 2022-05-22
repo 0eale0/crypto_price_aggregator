@@ -3,7 +3,6 @@ import pytest
 from app.main import app
 from fastapi.testclient import TestClient
 
-
 client = TestClient(app)
 
 
@@ -77,3 +76,13 @@ def test_create_user_wrong_passwords():
     assert response.status_code == 422
     data = response.json()
     assert data["detail"][0]["msg"] == "passwords do not match"
+
+
+def test_user_authenticated():
+    login_response = client.post(
+        "auth/token", {"username": "Danis111", "password": "1234"}
+    )
+    assert login_response.status_code == 200
+    assert len(login_response.json()) == 2
+    assert login_response.json()["access_token"] is not None
+    assert login_response.json()["token_type"] is not None
