@@ -25,6 +25,7 @@ python-binance = "^1.0.16"
 fastapi-utils = "^0.2.1"
 fastapi-crudrouter = "^0.8.5"
 pytest-coverage = "^0.0"
+trio = "^0.20.0"
 
 
 [tool.poetry.dev-dependencies]

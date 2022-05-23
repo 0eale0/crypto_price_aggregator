@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
@@ -50,16 +52,14 @@ def test_get_favourite_crypto_user_not_authenticated():
     assert response.status_code == 401
     assert "Not authenticated" in data["detail"]
 
+
 # @pytest.mark.anyio
 # async def test_get_favourite_crypto_user_authenticated():
 #     # TODO дописать
-#     data = {"username": "String2", "password": "00000"}
-#     async with AsyncClient(app=app, base_url="/") as ac:
-#         response = await ac.post(url="http://127.0.0.1/auth/token/", json=data)
-#         assert response.status_code == 200
-#         data = response.json()
-#         token = data["access_token"]
-# async with AsyncClient(app=app, base_url="http://127.0.0.1",
-#                        headers={"Authorization": f"Bearer {token}"}) as c:
-#     sec_response = c.get(url="get_favourite_crypto/")
+#     response = client.post(url="auth/token", json={"username": "String2", "password": "000000"})
+#     assert response.status_code == 200
+#     data = response.json()
+#     token = data["access_token"]
+#     async with AsyncClient(app=app, base_url="http://test") as c:
+#         sec_response = c.get(url="/get_favourite_crypto/", headers=response.json())
 #     assert sec_response.status_code == 200

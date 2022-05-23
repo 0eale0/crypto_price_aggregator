@@ -2,6 +2,7 @@ image: python:3.10
 
 stages:
   - lint
+  - test
 
 before_script:
   - pip install poetry==1.1.11
@@ -12,3 +13,18 @@ lint:
   stage: lint
   script:
     - black . --check --diff
+
+Test:
+  stage: test
+  image: python:3.9
+  script:
+    - apt-get update -q -y
+    - apt-get install -y python3-pip
+    - python3 -V
+    - /usr/local/bin/python -m pip install --upgrade pip
+    - pip install virtualenv
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+    - pytest --cov
+  coverage: '/TOTAL.*\s+(\d+\%)/'
