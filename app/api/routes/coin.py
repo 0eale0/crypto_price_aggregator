@@ -3,24 +3,18 @@ from fastapi import Depends, HTTPException, status, APIRouter
 
 from starlette.requests import Request
 
+from app.models.domain.users import Cryptocurrency
 from app.models.forms.users import NameCryptoForm
-from app.api.crypto_sites.coingecko_api import get_coin_description
-
-
+from app.api.services.db_services import get_session, get_current_active_user
+from sqlalchemy.orm import Session
+from app.models.domain.users import User
 router = APIRouter()
 
 
 @router.post("/get_crypto_info")
-async def get_crypto_info(request: Request, form: NameCryptoForm):
+def get_crypto_info(form: NameCryptoForm, db: Session = Depends(get_session)):
     try:
-        user = request.session.get("user")
-        if user:
-            description = await get_coin_description(form.name_crypto)
-            return description
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authorized",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        description = db.query(Cryptocurrency).filter(Cryptocurrency.name == form.name_crypto).first()
+        return description.crypto_info
     except Exception as error:
         return
