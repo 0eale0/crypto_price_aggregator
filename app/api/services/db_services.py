@@ -45,7 +45,7 @@ def find_user_by_username(username: str, db: Session) -> bool:
     user = db.query(User).filter(User.username == username).first()
     if user:
         return user
-    return None
+    return False
 
 
 def authenticate_user(username: str, password: str, db: Session):

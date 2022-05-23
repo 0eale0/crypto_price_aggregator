@@ -5,7 +5,6 @@ from pprint import pprint
 
 
 class FTXApi(CryptoSiteApi):
-
     name = "ftx"
 
     async def get_coin_price_from_api(self, symbol: str):
