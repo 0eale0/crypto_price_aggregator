@@ -5,7 +5,7 @@ from sqlalchemy.engine.base import Connection
 from app.models.forms.users import DollarsMaxAmount
 
 
-def get_connection():
+def get_connection() -> Connection:
     conn = engine.connect()
     return conn
 
