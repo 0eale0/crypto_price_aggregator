@@ -18,9 +18,9 @@ ALGORITHM = os.environ.get("ALGORITHM")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """It accepts a password and its possible hash as input,
-     checks if the hash matches this password.
-     If it matches, it returns True,
-     if it doesn't, it returns False."""
+    checks if the hash matches this password.
+    If it matches, it returns True,
+    if it doesn't, it returns False."""
     return pwd_context.verify(plain_password, hashed_password)
 
 

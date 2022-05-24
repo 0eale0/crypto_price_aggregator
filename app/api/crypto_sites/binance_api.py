@@ -6,7 +6,9 @@ import asyncio
 class BinanceAPI(CryptoSiteApi):
     name = "binance"
 
-    async def get_coin_price_from_api(self, symbol: str) -> dict[str, str | float] | None:
+    async def get_coin_price_from_api(
+        self, symbol: str
+    ) -> dict[str, str | float] | None:
         """
         It connects to binance_api and receives json,
         from which it extracts information about each coin (symbol and price)
@@ -18,7 +20,7 @@ class BinanceAPI(CryptoSiteApi):
             async with aiohttp.ClientSession() as session:
                 url = "https://api.binance.com/"
                 async with session.get(
-                        url + f"api/v3/ticker/price?symbol={symbol.upper()}USDT"
+                    url + f"api/v3/ticker/price?symbol={symbol.upper()}USDT"
                 ) as response:
                     payload = await response.json()
                     coin_info = {"symbol": symbol, "price": float(payload["price"])}

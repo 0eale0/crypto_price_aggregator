@@ -13,9 +13,7 @@ router = APIRouter()
 
 
 @router.post("/get_crypto_info")
-def get_crypto_info(
-    request: Request, form: NameCryptoForm, db: Session = Depends(get_session)
-):
+def get_crypto_info(form: NameCryptoForm, db: Session = Depends(get_session)):
     try:
         description = (
             db.query(Cryptocurrency)

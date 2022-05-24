@@ -128,4 +128,5 @@ class PostTopics(Base):
     post_id = Column(BIGINT, ForeignKey("posts.id"))
     coin_id = Column(BIGINT, ForeignKey("cryptocurrencies.id"))
 
+
 # Base.metadata.create_all(engine)
