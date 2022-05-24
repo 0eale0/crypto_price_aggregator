@@ -45,7 +45,7 @@ def find_user_by_username(username: str, db: Session) -> bool:
     user = db.query(User).filter(User.username == username).first()
     if user:
         return user
-    return None
+    return False
 
 
 def authenticate_user(username: str, password: str, db: Session):
@@ -70,7 +70,6 @@ def create_new_user(user: RegistrationForm, db: Session, is_google=False):
 
 
 def change_user(user: User, new_user: ChangeDataForm, db: Session):
-
     if new_user.username and not user.is_google:
         user.username = new_user.username
     if new_user.password and not user.is_google:
@@ -82,7 +81,7 @@ def change_user(user: User, new_user: ChangeDataForm, db: Session):
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme), db=Depends(get_session)
+        token: str = Depends(oauth2_scheme), db=Depends(get_session)
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -110,25 +109,25 @@ async def get_current_active_user(current_user=Depends(get_current_user)):
 def user_favourite_cryptocurrency(current_user: User, db: Session):
     return (
         db.query(UserFavouriteCrypto)
-        .filter(UserFavouriteCrypto.user_id == current_user.id)
-        .all()
+            .filter(UserFavouriteCrypto.user_id == current_user.id)
+            .all()
     )
 
 
 def get_cryptocurrency(db: Session, form: NameCryptoForm):
     return (
         db.query(Cryptocurrency)
-        .filter(Cryptocurrency.symbol == form.name_crypto)
-        .first()
+            .filter(Cryptocurrency.symbol == form.name_crypto)
+            .first()
     )
 
 
 def delete_favourite_coin(current_user: User, db: Session, coin: Cryptocurrency):
     user_with_fav_crypto = (
         db.query(UserFavouriteCrypto)
-        .filter(UserFavouriteCrypto.user_id == current_user.id)
-        .filter(UserFavouriteCrypto.coin_id == coin.id)
-        .first()
+            .filter(UserFavouriteCrypto.user_id == current_user.id)
+            .filter(UserFavouriteCrypto.coin_id == coin.id)
+            .first()
     )
     db.delete(user_with_fav_crypto)
     db.commit()
