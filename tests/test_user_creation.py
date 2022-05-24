@@ -31,7 +31,7 @@ def test_true_false_verify_password(input_data, output_data, expected):
 
 
 def test_get_password_hash():
-    assert type(get_password_hash("456789")) == str
+    assert isinstance(get_password_hash("456789"), str) is True
 
 
 def test_try_create_user():
@@ -63,6 +63,21 @@ def test_create_user():
     assert b"created" in response.content
 
 
+def test_register_existing_user():
+    response = client.post(
+        url="auth/register",
+        json={
+            "username": "ivan",
+            "email": "ivan@example.com",
+            "password": "1234",
+            "repeat_password": "1234",
+        },
+    )
+    assert response.status_code == 200, (
+        b"This email or username already exists" in response.content
+    )
+
+
 def test_create_user_wrong_passwords():
     response = client.post(
         "auth/register",
@@ -78,7 +93,7 @@ def test_create_user_wrong_passwords():
     assert data["detail"][0]["msg"] == "passwords do not match"
 
 
-def test_user_authenticated():
+def test_receive_token():
     login_response = client.post(
         "auth/token", {"username": "Danis111", "password": "1234"}
     )
