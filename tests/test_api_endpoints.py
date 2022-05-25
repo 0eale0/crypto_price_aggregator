@@ -3,7 +3,6 @@ from fastapi.testclient import TestClient
 from app.main import app
 from httpx import AsyncClient
 
-
 client = TestClient(app)
 
 
@@ -47,6 +46,45 @@ def test_get_favourite_crypto_user_not_authenticated():
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize(
+    "input_data",
+    [
+        (
+                "BTC"
+        ),
+        (
+                "SOL"
+        ),
+        (
+                "ATOM"
+        ),
+        (
+                "LUNA"
+        )
+    ],
+)
+async def test_add_favourite_crypto_user_authenticated(input_data):
+    user_credentials = {"username": "Danis111", "password": "1234"}
+    async with AsyncClient(app=app, base_url="http://127.0.0.1/") as ac:
+        response = await ac.post(url="auth/token", data=user_credentials)
+        assert response.status_code == 200
+        data = response.json()
+
+        token = data["access_token"]
+        async with AsyncClient(app=app, base_url="http://127.0.0.1/") as ac2:
+            sec_response = await ac2.post(
+                url="/add_favourite_crypto",
+                json={"name_crypto": input_data},
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "accept": "application/json",
+                },
+            )
+            assert sec_response.status_code == 200
+            assert sec_response.content is not None
+
+
+@pytest.mark.anyio
 async def test_get_favourite_crypto_user_authenticated():
     user_credentials = {"username": "Danis111", "password": "1234"}
     async with AsyncClient(app=app, base_url="http://127.0.0.1/") as ac:
@@ -62,5 +100,43 @@ async def test_get_favourite_crypto_user_authenticated():
                     "Authorization": f"Bearer {token}",
                     "accept": "application/json",
                 },
+            )
+            assert sec_response.status_code == 200
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "input_data",
+    [
+        (
+                9000
+        ),
+        (
+                88888
+        ),
+        (
+                5000
+        ),
+        (
+                800
+        )
+    ],
+)
+async def test_get_recommendations(input_data):
+    user_credentials = {"username": "Danis111", "password": "1234"}
+    async with AsyncClient(app=app, base_url="http://127.0.0.1/") as ac:
+        response = await ac.post(url="auth/token", data=user_credentials)
+        assert response.status_code == 200
+        data = response.json()
+
+        token = data["access_token"]
+        async with AsyncClient(app=app, base_url="http://127.0.0.1/") as ac2:
+            sec_response = await ac2.post(
+                url="/recommendations",
+                json={"amount_of_money": input_data},
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "accept": "application/json",
+                }
             )
             assert sec_response.status_code == 200
