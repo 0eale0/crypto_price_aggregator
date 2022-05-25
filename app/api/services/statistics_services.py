@@ -1,5 +1,4 @@
 from app.models.domain.users import engine
-from typing import List, Dict
 from fastapi import Depends
 from sqlalchemy.engine.base import Connection
 from app.models.forms.users import DollarsMaxAmount
@@ -10,7 +9,7 @@ def get_connection() -> Connection:
     return conn
 
 
-def get_recommendations(form: DollarsMaxAmount):
+def get_recommendations(form: DollarsMaxAmount) -> list | str:
     conn = get_connection()
     q = (
         "select"
@@ -28,7 +27,7 @@ def get_recommendations(form: DollarsMaxAmount):
         return str(e)
 
 
-def get_aggregated_prices(query: str) -> List[Dict]:
+def get_aggregated_prices(query: str) -> list | Exception:
     conn = get_connection()
     try:
         aggregated_prices = conn.execute(query)
@@ -37,7 +36,7 @@ def get_aggregated_prices(query: str) -> List[Dict]:
         return e
 
 
-def get_symbol_avg_price_by_day(symbol: str):
+def get_symbol_avg_price_by_day(symbol: str) -> list | Exception:
     conn = get_connection()
     avg_prices_by_day = (
         "select"

@@ -1,4 +1,3 @@
-from typing import List, Dict
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
@@ -29,27 +28,27 @@ UnauthorizedException = HTTPException(
 
 
 @router.get("/top_most_expensive_assets")
-def top_10_most_expensive(db: Session = Depends(get_session)):
+def top_10_most_expensive(db: Session = Depends(get_session)) -> list:
     coins = [
         c
         for c in db.query(CoinPrice)
-        .order_by(desc(CoinPrice.time))
-        .order_by(desc(CoinPrice.price))
-        .limit(10)
-        .all()
+            .order_by(desc(CoinPrice.time))
+            .order_by(desc(CoinPrice.price))
+            .limit(10)
+            .all()
     ]
     return coins
 
 
 @router.get("/top_cheapest_assets")
-def top_10_cheapest(db: Session = Depends(get_session)):
+def top_10_cheapest(db: Session = Depends(get_session)) -> list:
     coins = [
         c
         for c in db.query(CoinPrice)
-        .order_by(desc(CoinPrice.time))
-        .order_by(asc(CoinPrice.price))
-        .limit(10)
-        .all()
+            .order_by(desc(CoinPrice.time))
+            .order_by(asc(CoinPrice.price))
+            .limit(10)
+            .all()
     ]
     return coins
 
@@ -68,9 +67,9 @@ def average_min_max_price_by_exchange():
 
 @router.post("/add_favourite_crypto")
 def add_favourite_crypto_in_db(
-    form: NameCryptoForm,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_session),
+        form: NameCryptoForm,
+        current_user: User = Depends(get_current_active_user),
+        db: Session = Depends(get_session),
 ):
     try:
         if form.name_crypto:
@@ -82,9 +81,9 @@ def add_favourite_crypto_in_db(
 
 @router.post("/delete_favourite_crypto")
 def delete_favourite_crypto_in_db(
-    form: NameCryptoForm,
-    db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_active_user),
+        form: NameCryptoForm,
+        db: Session = Depends(get_session),
+        current_user: User = Depends(get_current_active_user),
 ):
     try:
         if form.name_crypto:
@@ -97,8 +96,8 @@ def delete_favourite_crypto_in_db(
 
 @router.get("/get_favourite_crypto")
 def get_favourite_crypto_in_db(
-    db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_active_user),
+        db: Session = Depends(get_session),
+        current_user: User = Depends(get_current_active_user),
 ):
     try:
         user_with_fav_crypto = user_favourite_cryptocurrency(current_user, db)
@@ -108,14 +107,14 @@ def get_favourite_crypto_in_db(
 
 
 @router.get("/charts/{symbol}")
-def show_charts(symbol: str) -> List[Dict]:
+def show_charts(symbol: str) -> list[dict]:
     avg_prices = get_symbol_avg_price_by_day(symbol)
     return avg_prices
 
 
 @router.post("/recommendations")
 def recommendations(
-    form: DollarsMaxAmount, current_user: User = Depends(get_current_active_user)
+        form: DollarsMaxAmount, current_user: User = Depends(get_current_active_user)
 ):
     """
     🤢🤢🤢🤢🤢🤢🤢🤢🤢
