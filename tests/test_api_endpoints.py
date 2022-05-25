@@ -85,6 +85,44 @@ async def test_add_favourite_crypto_user_authenticated(input_data):
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize(
+    "input_data",
+    [
+        (
+                "BTC"
+        ),
+        (
+                "SOL"
+        ),
+        (
+                "ATOM"
+        ),
+        (
+                "LUNA"
+        )
+    ],
+)
+async def test_delete_favourite_crypto_user_authenticated(input_data):
+    user_credentials = {"username": "Danis111", "password": "1234"}
+    async with AsyncClient(app=app, base_url="http://127.0.0.1/") as ac:
+        response = await ac.post(url="auth/token", data=user_credentials)
+        assert response.status_code == 200
+        data = response.json()
+
+        token = data["access_token"]
+        async with AsyncClient(app=app, base_url="http://127.0.0.1/") as ac2:
+            sec_response = await ac2.post(
+                url="/delete_favourite_crypto",
+                json={"name_crypto": input_data},
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "accept": "application/json",
+                },
+            )
+            assert sec_response.status_code == 200
+
+
+@pytest.mark.anyio
 async def test_get_favourite_crypto_user_authenticated():
     user_credentials = {"username": "Danis111", "password": "1234"}
     async with AsyncClient(app=app, base_url="http://127.0.0.1/") as ac:
