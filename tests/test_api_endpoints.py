@@ -6,7 +6,7 @@ from httpx import AsyncClient
 client = TestClient(app)
 
 
-def test_json_content_type():
+def test_average_min_max_price_by_exchange():
     response = client.get("/main_crypto")
     assert response.status_code == 200
     assert "application/json" in response.headers["content-type"]
@@ -30,6 +30,29 @@ def test_top_10_cheapest():
     response = client.get("/top_cheapest_assets")
     assert response.status_code == 200
     assert len(response.json()) == 10
+
+
+@pytest.mark.parametrize(
+    "input_data",
+    [
+        (
+                "NEAR"
+        ),
+        (
+                "DOGE"
+        ),
+        (
+                "ATOM"
+        ),
+        (
+                "BAT"
+        )
+    ],
+)
+def test_show_charts(input_data):
+    response = client.get(f"/charts/{input_data}")
+    assert response.status_code == 200
+    assert type(response.content) is not None
 
 
 def test_recommendations_not_authenticated():

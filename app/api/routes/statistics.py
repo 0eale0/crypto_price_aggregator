@@ -116,9 +116,6 @@ def show_charts(symbol: str) -> list[dict]:
 def recommendations(
         form: DollarsMaxAmount, current_user: User = Depends(get_current_active_user)
 ):
-    """
-    🤢🤢🤢🤢🤢🤢🤢🤢🤢
-    """
     try:
         return get_recommendations(form)
     except Exception:
