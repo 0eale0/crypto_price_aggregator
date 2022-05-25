@@ -3,6 +3,7 @@ image: python:3.10
 stages:
   - lint
   - test
+  - deploy
 
 before_script:
   - pip install poetry==1.1.11
@@ -27,3 +28,12 @@ pytest:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+
+deploy:
+  stage: deploy
+  script:
+    # Скрипт сборки указан внутри системы и
+    # никаких дополнительных настроек не требуется
+    - echo
+  only:
+    - main
