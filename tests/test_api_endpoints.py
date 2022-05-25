@@ -34,20 +34,7 @@ def test_top_10_cheapest():
 
 @pytest.mark.parametrize(
     "input_data",
-    [
-        (
-                "NEAR"
-        ),
-        (
-                "DOGE"
-        ),
-        (
-                "ATOM"
-        ),
-        (
-                "BAT"
-        )
-    ],
+    [("NEAR"), ("DOGE"), ("ATOM"), ("BAT")],
 )
 def test_show_charts(input_data):
     response = client.get(f"/charts/{input_data}")
@@ -71,20 +58,7 @@ def test_get_favourite_crypto_user_not_authenticated():
 @pytest.mark.anyio
 @pytest.mark.parametrize(
     "input_data",
-    [
-        (
-                "BTC"
-        ),
-        (
-                "SOL"
-        ),
-        (
-                "ATOM"
-        ),
-        (
-                "LUNA"
-        )
-    ],
+    [("BTC"), ("SOL"), ("ATOM"), ("LUNA")],
 )
 async def test_add_favourite_crypto_user_authenticated(input_data):
     user_credentials = {"username": "Danis111", "password": "1234"}
@@ -110,20 +84,7 @@ async def test_add_favourite_crypto_user_authenticated(input_data):
 @pytest.mark.anyio
 @pytest.mark.parametrize(
     "input_data",
-    [
-        (
-                "BTC"
-        ),
-        (
-                "SOL"
-        ),
-        (
-                "ATOM"
-        ),
-        (
-                "LUNA"
-        )
-    ],
+    [("BTC"), ("SOL"), ("ATOM"), ("LUNA")],
 )
 async def test_delete_favourite_crypto_user_authenticated(input_data):
     user_credentials = {"username": "Danis111", "password": "1234"}
@@ -168,20 +129,7 @@ async def test_get_favourite_crypto_user_authenticated():
 @pytest.mark.anyio
 @pytest.mark.parametrize(
     "input_data",
-    [
-        (
-                9000
-        ),
-        (
-                88888
-        ),
-        (
-                5000
-        ),
-        (
-                800
-        )
-    ],
+    [(9000), (88888), (5000), (800)],
 )
 async def test_get_recommendations(input_data):
     user_credentials = {"username": "Danis111", "password": "1234"}
@@ -198,6 +146,6 @@ async def test_get_recommendations(input_data):
                 headers={
                     "Authorization": f"Bearer {token}",
                     "accept": "application/json",
-                }
+                },
             )
             assert sec_response.status_code == 200
