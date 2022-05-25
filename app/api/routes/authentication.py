@@ -9,13 +9,19 @@ from sqlalchemy.orm import Session
 
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-from app.api.services.db_services import get_session, create_new_user, change_user
+from app.api.services.db_services import (
+    get_session,
+    create_new_user,
+    change_user,
+    get_current_active_user,
+)
 from app.models.schemas.tokens import Token
 from app.api.services import auth_helpers
+from app.api.services.db_services import authenticate_user
 from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
 from app.models.domain.users import User
 
@@ -47,7 +53,6 @@ async def login_via_google(request: Request):
     Calls api callback
     """
     redirect_uri = request.url_for("auth")
-    print(redirect_uri)
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
@@ -86,23 +91,22 @@ async def auth(request: Request, db: Session = Depends(get_session)):
 
             user = create_new_user(user_form, db, is_google=True)
 
-        request.session["user"] = user.dumps()
         return user
 
     return None
 
 
-@router.post("/login", response_model=Token)
+@router.post("/token", response_model=Token)
 async def login_for_access_token(
-        request: Request,
-        db: Session = Depends(get_session),
-        form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_session),
+    form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     """
     Logins through site system
     :return generated access_token
     """
-    user = auth_helpers.authenticate_user(form_data.username, form_data.password, db)
+
+    user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -110,7 +114,6 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    request.session["user"] = user.dumps()
     access_token_expires = timedelta(
         minutes=int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
     )
@@ -122,13 +125,13 @@ async def login_for_access_token(
 
 @router.post("/change_data")
 async def change_data(
-        request: Request, form: ChangeDataForm, db: Session = Depends(get_session)
+    form: ChangeDataForm,
+    db: Session = Depends(get_session),
+    user: User = Depends(get_current_active_user),
 ):
     try:
-        user = request.session.get("user")
         if user:
             changed_user = change_user(user, form, db)
-            # request.session['user'] = changed_user
             return changed_user
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -139,19 +142,6 @@ async def change_data(
         return str(e)
 
 
-@router.get("/logout")
-async def logout(request: Request):
-    request.session.pop("user", None)
-    return RedirectResponse(url="/")
-
-
-@router.get("/")
-async def homepage(request: Request):
-    user = request.session.get("user")
-    if user:
-        return user
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Not authorized",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+@router.get("/home_page")
+async def read_users_me(current_user: User = Depends(get_current_active_user)):
+    return current_user

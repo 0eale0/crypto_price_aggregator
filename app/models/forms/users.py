@@ -74,5 +74,5 @@ class NameCryptoForm(BaseModel):
     name_crypto: str
 
 
-class NameFavouriteCryptoForm(BaseModel):
-    name_crypto: str
+class DollarsMaxAmount(BaseModel):
+    amount_of_money: int
