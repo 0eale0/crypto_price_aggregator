@@ -54,7 +54,7 @@ def get_symbol_avg_price_by_day(symbol: str) -> list | Exception:
         return e
 
 
-def get_standard_deviations(symbol: str):
+def get_standard_deviations(symbol: str) -> list | str:
     conn = get_connection()
     std_devs = (
         "select "

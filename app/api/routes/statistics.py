@@ -31,6 +31,14 @@ UnauthorizedException = HTTPException(
 
 @router.get("/top_most_expensive_assets")
 def top_10_most_expensive(db: Session = Depends(get_session)) -> list:
+    """
+    Refers to the CoinPrice table, sorts the coins in descending order of time,
+    that is, the latest coins come first.
+    Next, the coins are sorted in descending order of price,
+    so that the coins with the highest prices will be at the beginning.
+    Coins are limited to 10 pieces and are collected in a list.
+    This list is then returned. It consists of the top 10 most expensive cryptocurrencies in recent times.
+    """
     coins = [
         c
         for c in db.query(CoinPrice)
@@ -44,6 +52,14 @@ def top_10_most_expensive(db: Session = Depends(get_session)) -> list:
 
 @router.get("/top_cheapest_assets")
 def top_10_cheapest(db: Session = Depends(get_session)) -> list:
+    """
+    Refers to the CoinPrice table, sorts the coins in descending order of time,
+    that is, the latest coins come first.
+    The coins are then sorted in ascending order of price,
+    so that the coins with the lowest prices will be at the beginning.
+    Coins are limited to 10 pieces and are collected in a list.
+    This list is then returned. It consists of the top 10 cheap cryptocurrencies in recent times.
+    """
     coins = [
         c
         for c in db.query(CoinPrice)

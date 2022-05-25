@@ -1,7 +1,6 @@
 import asyncio
 from pprint import pprint
 from typing import List, Dict
-
 import aiohttp
 
 from app.api.services.api_config import symbols_for_tracker
