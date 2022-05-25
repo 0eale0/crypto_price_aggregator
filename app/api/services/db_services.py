@@ -11,7 +11,11 @@ from starlette import status
 
 from app.models.forms.users import RegistrationForm, ChangeDataForm
 from app.models.domain.users import User
-from app.api.services.auth_helpers import get_password_hash, oauth2_scheme
+from app.api.services.auth_helpers import (
+    get_password_hash,
+    oauth2_scheme,
+    verify_password,
+)
 from app.core.config import Configuration
 from app.models.schemas.tokens import TokenData
 
@@ -41,7 +45,15 @@ def find_user_by_username(username: str, db: Session) -> bool:
     user = db.query(User).filter(User.username == username).first()
     if user:
         return user
-    return None
+    return False
+
+
+def authenticate_user(username: str, password: str, db: Session):
+    user = find_user_by_username(username, db)
+
+    if not user or not verify_password(password, user.hashed_password):
+        return False
+    return user
 
 
 def create_new_user(user: RegistrationForm, db: Session, is_google=False):
@@ -58,7 +70,6 @@ def create_new_user(user: RegistrationForm, db: Session, is_google=False):
 
 
 def change_user(user: User, new_user: ChangeDataForm, db: Session):
-
     if new_user.username and not user.is_google:
         user.username = new_user.username
     if new_user.password and not user.is_google:

@@ -6,9 +6,6 @@ from jose import jwt
 from passlib.context import CryptContext
 import os
 from dotenv import load_dotenv
-from sqlalchemy.orm import Session
-
-from app.api.services import db_services
 
 load_dotenv()
 
@@ -19,15 +16,20 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
 
 
-def verify_password(plain_password, hashed_password):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """It accepts a password and its possible hash as input,
+    checks if the hash matches this password.
+    If it matches, it returns True,
+    if it doesn't, it returns False."""
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password):
+def get_password_hash(password: str) -> str:
+    """Hashes the password and returns its hash as a string"""
     return pwd_context.hash(password)
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -36,11 +38,3 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-
-def authenticate_user(username: str, password: str, db: Session):
-    user = db_services.find_user_by_username(username, db)
-
-    if not user or not verify_password(password, user.hashed_password):
-        return False
-    return user

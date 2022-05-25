@@ -21,6 +21,7 @@ from app.api.services.db_services import (
 )
 from app.models.schemas.tokens import Token
 from app.api.services import auth_helpers
+from app.api.services.db_services import authenticate_user
 from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
 from app.models.domain.users import User
 
@@ -105,7 +106,7 @@ async def login_for_access_token(
     :return generated access_token
     """
 
-    user = auth_helpers.authenticate_user(form_data.username, form_data.password, db)
+    user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
