@@ -52,3 +52,21 @@ def get_symbol_avg_price_by_day(symbol: str) -> list | Exception:
         return [r for r in avg_prices]
     except Exception as e:
         return e
+
+
+def get_standard_deviations(symbol: str):
+    conn = get_connection()
+    std_devs = (
+        "select "
+        "c.id, c.symbol, date(cp.time) as date, avg(cp.price), stddev(cp.price) std_dev "
+        "from coin_price cp "
+        "left join cryptocurrencies c on c.id = cp.coin_id "
+        f"where c.symbol='{symbol.upper()}' "
+        "group by cp.coin_id, c.symbol, c.id, date "
+        "order by cp.coin_id"
+    )
+    try:
+        res = conn.execute(std_devs)
+        return [r for r in res]
+    except Exception as e:
+        return str(e)

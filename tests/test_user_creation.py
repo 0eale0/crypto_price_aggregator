@@ -45,7 +45,7 @@ def test_register_existing_user():
         },
     )
     assert response.status_code == 200, (
-            b"This email or username already exists" in response.content
+        b"This email or username already exists" in response.content
     )
 
 
