@@ -4,17 +4,19 @@ stages:
   - lint
   - test
 
-before_script:
-  - pip install poetry==1.1.11
-  - poetry config virtualenvs.create false
-  - poetry install
 
 lint:
   stage: lint
   script:
+    - pip install poetry==1.1.11
+    - poetry config virtualenvs.create false
+    - poetry install
     - black . --check --diff
 
 pytest:
   stage: test
   script:
-    - pytest -v --cov
+    - pip install pytest pytest-cov
+    - coverage run -m pytest
+    - coverage report
+  coverage: '/TOTAL.*\s([.\d]+)%/'
