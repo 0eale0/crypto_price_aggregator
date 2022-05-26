@@ -5,18 +5,21 @@ stages:
   - test
   - deploy
 
-before_script:
-  - pip install poetry==1.1.11
-  - poetry config virtualenvs.create false
-  - poetry install
+#before_script:
+#  - pip install poetry==1.1.11
+#  - poetry config virtualenvs.create false
+#  - poetry install
 
 lint:
   stage: lint
+  before_script: []
   script:
+    - pip install black=22.3.0
     - black . --check --diff
 
 pytest:
   stage: test
+  before_script: []
   script:
     - pip install pytest pytest-cov
     - coverage run -m pytest
