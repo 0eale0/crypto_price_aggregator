@@ -1,9 +1,9 @@
 import aiohttp
 
 
-async def get_coin_description(coin_name: str) -> str | None:
+async def get_coin_description(coin_name: str) -> str | None:  # pragma: no cover
     """
-    Asks coingecko_api for json.
+    Asks CoinGecko API for json.
     From this json gets information about the cryptocurrency,
     the name of which is fed to the input of the function, and returns it.
     In case of an error that occurs if there is no information about the cryptocurrency in the api, it returns None.

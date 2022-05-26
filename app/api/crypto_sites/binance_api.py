@@ -8,7 +8,7 @@ class BinanceAPI(CryptoSiteApi):
 
     async def get_coin_price_from_api(
         self, symbol: str
-    ) -> dict[str, str | float] | None:
+    ) -> dict[str, str | float] | None:  # pragma: no cover
         """
         It connects to binance_api and receives json,
         from which it extracts information about each coin (symbol and price)
@@ -29,7 +29,7 @@ class BinanceAPI(CryptoSiteApi):
             return
 
 
-async def main():
+async def main():  # pragma: no cover
     binance = BinanceAPI()
     return await binance.get_coin_prices_from_api()
 

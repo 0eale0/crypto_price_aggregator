@@ -6,7 +6,7 @@ import aiohttp
 from app.api.services.api_config import symbols_for_tracker
 
 
-class SymbolsTracker:
+class SymbolsTracker:  # pragma: no cover
     symbols = symbols_for_tracker
 
     async def get_symbols(self) -> List[Dict]:
@@ -27,10 +27,10 @@ class SymbolsTracker:
                 ]
 
 
-async def main():
+async def main():  # pragma: no cover
     tracker = SymbolsTracker()
     return await tracker.get_symbols()
 
 
-if __name__ == "__main__":
-    pprint((asyncio.run(main())))
+if __name__ == "__main__":  # pragma: no cover
+    pprint((asyncio.run(main())))  # pragma: no cover

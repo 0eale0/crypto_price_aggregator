@@ -4,7 +4,7 @@ import asyncio
 from pprint import pprint
 
 
-class KucoinAPI(CryptoSiteApi):
+class KucoinAPI(CryptoSiteApi):  # pragma: no cover
     name = "kucoin"
 
     async def get_coin_price_from_api(
@@ -34,10 +34,10 @@ class KucoinAPI(CryptoSiteApi):
             return
 
 
-async def main():
+async def main():  # pragma: no cover
     kucoin = KucoinAPI()
     return await kucoin.get_coin_prices_from_api()
 
 
-if __name__ == "__main__":
-    pprint((asyncio.run(main())))
+if __name__ == "__main__":  # pragma: no cover
+    pprint((asyncio.run(main())))  # pragma: no cover

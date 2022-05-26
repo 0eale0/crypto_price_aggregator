@@ -174,10 +174,10 @@ class CryptoSitesApiInterface(ABC):
 
 
 class CryptoSitesApi(CryptoSitesApiInterface):
-    def __init__(self, list_with_api: list):
+    def __init__(self, list_with_api: list):  # pragma: no cover
         super().__init__(list_with_api)
 
-    async def update_coin_prices_in_db(self):
+    async def update_coin_prices_in_db(self):  # pragma: no cover
         for api in self.list_with_api:
             coins_info = await SymbolsTracker().get_symbols()
             prices_from_api = await api.get_coin_prices_from_api()
@@ -186,7 +186,7 @@ class CryptoSitesApi(CryptoSitesApiInterface):
             api.save_price_in_db(prices_from_api)
 
     # TODO END IT
-    def get_coin_prices(self):
+    def get_coin_prices(self):  # pragma: no cover
         result = {}
         for api in self.list_with_api:
             result[api.name] = api.get_coin_prices_from_db()

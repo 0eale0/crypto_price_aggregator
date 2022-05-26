@@ -4,7 +4,7 @@ import aiohttp
 from pprint import pprint
 
 
-class FTXApi(CryptoSiteApi):
+class FTXApi(CryptoSiteApi):  # pragma: no cover
     name = "ftx"
 
     async def get_coin_price_from_api(self, symbol: str) -> dict | None:
@@ -27,10 +27,10 @@ class FTXApi(CryptoSiteApi):
             return
 
 
-async def main():
+async def main():  # pragma: no cover
     ftx = FTXApi()
     return await ftx.get_coin_prices_from_api()
 
 
 if __name__ == "__main__":
-    pprint((asyncio.run(main())))
+    pprint((asyncio.run(main())))  # pragma: no cover
