@@ -1,3 +1,4 @@
+from typing import Dict, List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
@@ -89,6 +90,13 @@ def add_favourite_crypto_in_db(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_session),
 ):
+    """
+    This function adds new asset to the list of favourites.
+    :param form: body of request(you need to pass just symbol, not full name(etc. "BTC", "ETH")
+    :param current_user: authenticated with JWT token user
+    :param db: connection with database
+    :return: list of dicts with coin_id, user_id
+    """
     try:
         if form.name_crypto:
             coin = get_cryptocurrency(db, form)
@@ -103,6 +111,13 @@ def delete_favourite_crypto_in_db(
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user),
 ):
+    """
+    This function deletes asset from the list of favourites assets.\n
+    :param form: body of request\n
+    :param current_user: authenticated with JWT token user\n
+    :param db: connection with database\n
+    :return: updated list of favourites(list of dicts with coin_id, user_id) if user is authenticated else 401 code
+    """
     try:
         if form.name_crypto:
             coin = get_cryptocurrency(db, form)
@@ -117,6 +132,12 @@ def get_favourite_crypto_in_db(
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user),
 ):
+    """
+    This function returns list of favourites assets of user.\n
+    :param current_user: authenticated with JWT token user\n
+    :param db: connection with database\n
+    :return: updated list of favourites(list of dicts with coin_id, user_id) if user is authenticated else 401 code\n
+    """
     try:
         user_with_fav_crypto = user_favourite_cryptocurrency(current_user, db)
         return user_with_fav_crypto
@@ -125,7 +146,14 @@ def get_favourite_crypto_in_db(
 
 
 @router.get("/charts/{symbol}")
-def show_charts(symbol: str) -> list[dict]:
+def show_charts(symbol: str) -> List[Dict]:
+    """
+    This function shows average prices of concrete asset.\n
+    :param symbol:query parameter(etc. BTC)\n
+    :param current_user: authenticated with JWT token user\n
+    :param db: connection with database\n
+    :return: updated list of favourites(list of dicts with coin_id, user_id) if user is authenticated else 401 code
+    """
     avg_prices = get_symbol_avg_price_by_day(symbol)
     return avg_prices
 
@@ -134,6 +162,13 @@ def show_charts(symbol: str) -> list[dict]:
 def recommendations(
     form: DollarsMaxAmount, current_user: User = Depends(get_current_active_user)
 ):
+    """
+    This function shows the list of assets whose values are less than price in form.\n
+    :param form: \n
+    :param current_user: authenticated with JWT token user\n
+    :param db: connection with database\n
+    :return: updated list of favourites(list of dicts with coin_id, user_id) if user is authenticated else 401 code
+    """
     try:
         return get_recommendations(form)
     except Exception:
