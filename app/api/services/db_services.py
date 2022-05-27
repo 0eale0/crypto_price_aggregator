@@ -35,6 +35,13 @@ def get_session():
 
 
 def find_user_by_email(email: str, db: Session) -> bool:
+    """
+    Looks up a user in the database based on
+    the email passed to the function.
+    If a user with that email exists in the database,
+    then returns an object of that user.
+    If there is no such user in the database, then returns False.
+    """
     user = db.query(User).filter(User.email == email).first()
     if user:
         return user
@@ -56,6 +63,13 @@ def find_user_by_username(username: str, db: Session) -> bool:
 
 
 def authenticate_user(username: str, password: str, db: Session):
+    """
+    The function checks if the entered data about the user exists in the database,
+    if not and the hash of the entered password does not match
+    the hash stored in the database, then returns False,
+    if there is such a user and the hash of the password matches
+    the hash in the database, then returns this user.
+    """
     user = find_user_by_username(username, db)
     if not user or not verify_password(password, user.hashed_password):
         return False
@@ -123,6 +137,9 @@ async def get_current_user(
 
 
 async def get_current_active_user(current_user=Depends(get_current_user)):
+    """
+    Returns the current active user.
+    """
     return current_user
 
 
