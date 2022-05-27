@@ -7,9 +7,7 @@ from pprint import pprint
 class KucoinAPI(CryptoSiteApi):  # pragma: no cover
     name = "kucoin"
 
-    async def get_coin_price_from_api(
-        self, symbol: str
-    ) -> dict[str, str | float] | None:
+    async def get_coin_price_from_api(self, symbol: str) -> dict[str, str | float] | None:
         """
         Connects to kucoin_api and gets json,
         from which receives information about each coin (symbol and price)
