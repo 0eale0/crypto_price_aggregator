@@ -127,6 +127,11 @@ async def get_current_active_user(current_user=Depends(get_current_user)):
 
 
 def user_favourite_cryptocurrency(current_user: User, db: Session):
+    """
+    Takes the current user object and returns
+    that user's favorite cryptocurrencies
+    from the database.
+    """
     return (
         db.query(UserFavouriteCrypto)
             .filter(UserFavouriteCrypto.user_id == current_user.id)
@@ -135,6 +140,11 @@ def user_favourite_cryptocurrency(current_user: User, db: Session):
 
 
 def get_cryptocurrency(db: Session, form: NameCryptoForm):
+    """
+    Accepts a form with a cryptocurrency name field
+    and returns an object of that cryptocurrency
+    from the database.
+    """
     return (
         db.query(Cryptocurrency)
             .filter(Cryptocurrency.symbol == form.name_crypto)
