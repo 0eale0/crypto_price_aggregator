@@ -42,6 +42,13 @@ def find_user_by_email(email: str, db: Session) -> bool:
 
 
 def find_user_by_username(username: str, db: Session) -> bool:
+    """
+    Looks up a user in the database based on
+    the username passed to the function.
+    If a user with that username exists in the database,
+    then returns an object of that user.
+    If there is no such user in the database, then returns False.
+    """
     user = db.query(User).filter(User.username == username).first()
     if user:
         return user
@@ -50,13 +57,18 @@ def find_user_by_username(username: str, db: Session) -> bool:
 
 def authenticate_user(username: str, password: str, db: Session):
     user = find_user_by_username(username, db)
-
     if not user or not verify_password(password, user.hashed_password):
         return False
     return user
 
 
 def create_new_user(user: RegistrationForm, db: Session, is_google=False):
+    """
+    Creates a new user object based on
+    the form data passed to the function,
+    adds it to the database,
+    and returns the created user object.
+    """
     user = User(
         email=user.email,
         username=user.username,
