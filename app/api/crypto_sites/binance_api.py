@@ -6,9 +6,7 @@ import asyncio
 class BinanceAPI(CryptoSiteApi):
     name = "binance"
 
-    async def get_coin_price_from_api(
-        self, symbol: str
-    ) -> dict[str, str | float] | None:  # pragma: no cover
+    async def get_coin_price_from_api(self, symbol: str) -> dict[str, str | float] | None:  # pragma: no cover
         """
         It connects to binance_api and receives json,
         from which it extracts information about each coin (symbol and price)

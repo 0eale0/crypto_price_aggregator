@@ -8,15 +8,13 @@ from app.models.forms.users import NameCryptoForm
 from app.api.services.db_services import get_session, get_current_active_user
 from sqlalchemy.orm import Session
 from app.models.domain.users import User
-from typing import Dict, Union, AnyStr
 
 router = APIRouter()
 
 
 @router.post("/get_crypto_info")
 def get_crypto_info(
-    form: NameCryptoForm, db: Session = Depends(get_session)
-) -> Union[Dict, AnyStr]:
+    form: NameCryptoForm, db: Session = Depends(get_session)) -> dict[str, str] | None:
     try:
         description = (
             db.query(Cryptocurrency)
