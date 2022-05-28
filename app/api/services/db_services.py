@@ -170,6 +170,13 @@ def get_cryptocurrency(db: Session, form: NameCryptoForm):
 
 
 def delete_favourite_coin(current_user: User, db: Session, coin: Cryptocurrency):
+    """
+    Removes the cryptocurrency from the current user,
+    which is fed into the function,
+    from the list of favorites,
+    finding it in the database and returns all your favorite cryptocurrencies,
+    which the current user has.
+    """
     user_with_fav_crypto = (
         db.query(UserFavouriteCrypto)
             .filter(UserFavouriteCrypto.user_id == current_user.id)
