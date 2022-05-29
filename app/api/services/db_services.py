@@ -190,9 +190,15 @@ def delete_favourite_coin(current_user: User, db: Session, coin: Cryptocurrency)
 
 
 def update_favourites_coins(current_user: User, coin: Cryptocurrency, db: Session):
-    user_with_fav_crypto = UserFavouriteCrypto(user_id=current_user.id, coin_id=coin.id)
-    db.add(user_with_fav_crypto)
-    db.commit()
-    db.refresh(user_with_fav_crypto)
-    favourites = user_favourite_cryptocurrency(current_user, db)
-    return favourites
+    exists = bool(UserFavouriteCrypto(user_id=current_user.id, coin_id=coin.id))
+    if exists:
+        return {"msg": "You already have this coin in your favourites."}
+    else:
+        user_with_fav_crypto = UserFavouriteCrypto(
+            user_id=current_user.id, coin_id=coin.id
+        )
+        db.add(user_with_fav_crypto)
+        db.commit()
+        db.refresh(user_with_fav_crypto)
+        favourites = user_favourite_cryptocurrency(current_user, db)
+        return favourites

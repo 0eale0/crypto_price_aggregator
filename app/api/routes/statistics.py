@@ -125,7 +125,7 @@ def add_favourite_crypto_in_db(
     :param form: Request body (you need to pass just symbol, not full name(etc. "BTC", "ETH")\n
     :param current_user: authenticated with JWT token user\n
     :param db: connection with database\n
-    :return: list of dicts with coin_id, user_id
+    :return: list of dicts with coin_id, user_id, or message that you already have
     """
     try:
         if form.name_crypto:
