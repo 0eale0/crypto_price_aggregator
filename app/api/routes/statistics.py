@@ -34,9 +34,9 @@ UnauthorizedException = HTTPException(
 def top_10_most_expensive(db: Session = Depends(get_session)) -> list:
     """
     Refers to the CoinPrice table, sorts the coins in descending order of time,
-    that is, the latest coins come first.
+    that is, the latest coins come first.\n
     Next, the coins are sorted in descending order of price,
-    so that the coins with the highest prices will be at the beginning.
+    so that the coins with the highest prices will be at the beginning.\n
     Coins are limited to 10 pieces and are collected in a list.
     This list is then returned. It consists of the top 10 most expensive cryptocurrencies in recent times.
     """
@@ -55,9 +55,9 @@ def top_10_most_expensive(db: Session = Depends(get_session)) -> list:
 def top_10_cheapest(db: Session = Depends(get_session)) -> list:
     """
     Refers to the CoinPrice table, sorts the coins in descending order of time,
-    that is, the latest coins come first.
+    that is, the latest coins come first.\n
     The coins are then sorted in ascending order of price,
-    so that the coins with the lowest prices will be at the beginning.
+    so that the coins with the lowest prices will be at the beginning.\n
     Coins are limited to 10 pieces and are collected in a list.
     This list is then returned. It consists of the top 10 cheap cryptocurrencies in recent times.
     """
@@ -74,6 +74,36 @@ def top_10_cheapest(db: Session = Depends(get_session)) -> list:
 
 @router.get("/main_crypto")
 def average_min_max_price_by_exchange():
+    """
+      Returns average, min, max price of every asset in system by each exchange.\n
+      Example Response:\n
+          [
+              {
+              "coin_id": 1,
+              "symbol": "BTC",
+              "name": "binance",
+              "max": 29322.18,
+              "min": 29164.24,
+              "avg": 29232.00090909091
+              },\n
+              {
+              "coin_id": 1,
+              "symbol": "BTC",
+              "name": "ftx",
+              "max": 29334,
+              "min": 29167,
+              "avg": 29226.125
+              },\n
+              {
+              "coin_id": 1,
+              "symbol": "BTC",
+              "name": "kucoin",
+              "max": 29342.3,
+              "min": 29160.4,
+              "avg": 29241.600000000002
+    }
+          ]
+    """
     query = min_max_average_price_by_exchange_for_each
     try:
         prices = get_aggregated_prices(query)
@@ -91,10 +121,10 @@ def add_favourite_crypto_in_db(
     db: Session = Depends(get_session),
 ):
     """
-    This function adds new asset to the list of favourites.
-    :param form: body of request(you need to pass just symbol, not full name(etc. "BTC", "ETH")
-    :param current_user: authenticated with JWT token user
-    :param db: connection with database
+    This function adds new asset to the list of favourites.\n
+    :param form: Request body (you need to pass just symbol, not full name(etc. "BTC", "ETH")\n
+    :param current_user: authenticated with JWT token user\n
+    :param db: connection with database\n
     :return: list of dicts with coin_id, user_id
     """
     try:
@@ -150,8 +180,6 @@ def show_charts(symbol: str) -> List[Dict]:
     """
     This function shows average prices of concrete asset.\n
     :param symbol:query parameter(etc. BTC)\n
-    :param current_user: authenticated with JWT token user\n
-    :param db: connection with database\n
     :return: updated list of favourites(list of dicts with coin_id, user_id) if user is authenticated else 401 code
     """
     avg_prices = get_symbol_avg_price_by_day(symbol)
@@ -166,7 +194,6 @@ def recommendations(
     This function shows the list of assets whose values are less than price in form.\n
     :param form: \n
     :param current_user: authenticated with JWT token user\n
-    :param db: connection with database\n
     :return: updated list of favourites(list of dicts with coin_id, user_id) if user is authenticated else 401 code
     """
     try:
@@ -177,5 +204,10 @@ def recommendations(
 
 @router.get("/standard_deviation/{symbol}")
 def std_deviation(symbol: str):
+    """
+    Returns std_dev, average price of one asset by each day.\n
+    Prices are aggregated only by date.\n
+    :param: symbol: etc. "BTC", "ETC"(not bitcoin, ethereum)
+    """
     std_devs = get_standard_deviations(symbol)
     return std_devs
