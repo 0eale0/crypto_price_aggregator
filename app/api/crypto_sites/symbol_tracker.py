@@ -1,16 +1,16 @@
 import asyncio
 from pprint import pprint
 import aiohttp
-
+from typing import Dict, List
 from app.api.services.api_config import symbols_for_tracker
 
 
 class SymbolsTracker:  # pragma: no cover
     symbols = symbols_for_tracker
 
-    async def get_symbols(self) -> list[dict]:
+    async def get_symbols(self) -> List[Dict[str, str]]:
         """
-        Refers to the cryptobubbles_api,
+        Refers to the CryptobubblesApi and
         creates a list of dictionaries with the names of the coins
         that are in kucoin_api, ftx api, binance api,
         cryptobubbles_api and their symbols.

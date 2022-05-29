@@ -1,7 +1,10 @@
 import aiohttp
+from typing import Union, Dict
 
 
-async def get_coin_description(coin_name: str) -> str | None:  # pragma: no cover
+async def get_coin_description(
+    coin_name: str,
+) -> Union[Dict[str, str], None]:  # pragma: no cover
     """
     Asks CoinGecko API for json.
     From this json gets information about the cryptocurrency,
@@ -14,8 +17,7 @@ async def get_coin_description(coin_name: str) -> str | None:  # pragma: no cove
                 f"https://api.coingecko.com/api/v3/coins/{coin_name}"
             ) as response:
                 json = await response.json()
-                coin_info = json["description"]["en"]
+                coin_info = {"description": json["description"]["en"]}
         except Exception:
             coin_info = None
-
         return coin_info

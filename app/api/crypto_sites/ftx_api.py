@@ -2,12 +2,15 @@ from app.api.crypto_sites.base_classes import CryptoSiteApi
 import asyncio
 import aiohttp
 from pprint import pprint
+from typing import Union, Dict
 
 
 class FTXApi(CryptoSiteApi):  # pragma: no cover
     name = "ftx"
 
-    async def get_coin_price_from_api(self, symbol: str) -> dict | None:
+    async def get_coin_price_from_api(
+        self, symbol: str
+    ) -> Union[Dict[str, float], None]:
         """
         Requests ftx_api json.
         From this json gets information about the cryptocurrency (symbol and price),
@@ -23,7 +26,7 @@ class FTXApi(CryptoSiteApi):  # pragma: no cover
                     result = json["result"]
                     coin_info = {"symbol": symbol, "price": result["price"]}
             return coin_info
-        except Exception as e:
+        except Exception:
             return
 
 
