@@ -128,11 +128,10 @@ def add_favourite_crypto_in_db(
     :return: list of dicts with coin_id, user_id, or message that you already have
     """
     try:
-        if form.name_crypto:
-            coin = get_cryptocurrency(db, form)
-            return update_favourites_coins(current_user, coin, db)
-    except Exception:
-        raise UnauthorizedException
+        coin = get_cryptocurrency(db, form)
+        return update_favourites_coins(current_user, coin, db)
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @router.post("/delete_favourite_crypto")
