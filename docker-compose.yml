@@ -1,6 +1,18 @@
-version: '3.9'
+version: '3.10'
 
 services:
+
+  nginx:
+    image: docker-nginx:latest
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - static:/app/static
+    depends_on:
+      - fastapi-app
 
   fastapi-db:
     image: postgres:13-alpine
