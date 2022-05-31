@@ -17,7 +17,7 @@ class SymbolsTracker:  # pragma: no cover
         """
         async with aiohttp.ClientSession() as session:
             url = "https://cryptobubbles.net/backend/data/bubbles1000.usd.json"
-            async with session.get(url) as response:
+            async with session.get(url, ssl=False) as response:
                 payload = await response.json()
                 return [
                     {"symbol": coin["symbol"], "name": coin["name"]}

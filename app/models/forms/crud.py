@@ -76,3 +76,9 @@ class PostsComment(FormForCrud):
     user_id: int
     post_id: int
     data: str
+
+
+class PostTopics(FormForCrud):
+    id: int
+    post_id: int
+    coin_id: int

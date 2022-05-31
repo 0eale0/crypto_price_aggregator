@@ -14,10 +14,11 @@ async def get_coin_description(
     async with aiohttp.ClientSession() as session:
         try:
             async with session.get(
-                f"https://api.coingecko.com/api/v3/coins/{coin_name}"
+                f"https://api.coingecko.com/api/v3/coins/{coin_name}", ssl=False
             ) as response:
                 json = await response.json()
-                coin_info = {"description": json["description"]["en"]}
-        except Exception:
+                coin_info = json["description"]["en"]
+        except Exception as error:
+            print(error)
             coin_info = None
         return coin_info
