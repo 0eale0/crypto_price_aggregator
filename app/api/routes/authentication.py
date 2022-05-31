@@ -22,7 +22,7 @@ from app.api.services.db_services import (
 from app.models.schemas.tokens import Token
 from app.api.services import auth_helpers
 from app.api.services.db_services import authenticate_user
-from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
+from app.models.forms.users import RegistrationForm, ChangeDataForm
 from app.models.domain.users import User
 
 router = APIRouter()
@@ -40,6 +40,9 @@ oauth.register(
 
 @router.post("/register")
 async def register(form: RegistrationForm, db: Session = Depends(get_session)):
+    """
+    Registers a new user.
+    """
     try:
         user = create_new_user(form, db)
         return HTMLResponse(content="User is created", status_code=200)
