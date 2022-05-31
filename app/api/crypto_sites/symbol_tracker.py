@@ -13,7 +13,7 @@ class SymbolsTracker:  # pragma: no cover
         Refers to the CryptobubblesApi and
         creates a list of dictionaries with the names of the coins
         that are in kucoin_api, ftx api, binance api,
-        cryptobubbles_api and their symbols.
+        cryptobubbles_api at the same time and their symbols.
         """
         async with aiohttp.ClientSession() as session:
             url = "https://cryptobubbles.net/backend/data/bubbles1000.usd.json"
