@@ -24,6 +24,7 @@ class RegistrationForm(BaseModel):
 
     async def load_data(self):
         form = await self.request.form()
+        print(form)
         self.username = form.get("username")
         self.email = form.get("email")
         self.password = form.get("password")
@@ -67,3 +68,11 @@ class ChangeDataForm(BaseModel):
         if not len(v) >= 4:
             raise ValueError("Password length should be at least 4 symbols")
         return v
+
+
+class NameCryptoForm(BaseModel):
+    name_crypto: str
+
+
+class DollarsMaxAmount(BaseModel):
+    amount_of_money: int

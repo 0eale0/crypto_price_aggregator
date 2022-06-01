@@ -5,7 +5,7 @@ description = ""
 authors = ["eale <RUSLIKPVP@yandex.ru>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 uvicorn = {extras = ["standard"], version = "^0.17.6"}
 fastapi = "^0.75.2"
 psycopg2 = "^2.9.3"
@@ -19,10 +19,20 @@ passlib = "^1.7.4"
 python-multipart = "^0.0.5"
 bcrypt = "^3.2.0"
 alembic = "^1.7.7"
+SQLAlchemy-ImageAttach = "^1.1.0"
+magickwand = "^0.2"
+python-binance = "^1.0.16"
+fastapi-utils = "^0.2.1"
+fastapi-crudrouter = "^0.8.5"
+pytest-coverage = "^0.0"
+trio = "^0.20.0"
+
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
 pre-commit = "^2.18.1"
+pytest = "^7.1.2"
+trio = "^0.20.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

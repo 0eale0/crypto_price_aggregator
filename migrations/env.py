@@ -1,11 +1,10 @@
-from os import environ
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from app.auth.models import Base
+from app.models.domain.users import Base
 from dotenv import load_dotenv
-from app.auth.local_configs import Configuration
+from app.core.config import Configuration
 from alembic import context
 
 load_dotenv()
@@ -29,7 +28,6 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
-
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -61,6 +59,16 @@ def run_migrations_offline():
         context.run_migrations()
 
 
+def my_compare_type(
+    context, inspected_column, metadata_column, inspected_type, metadata_type
+):
+    # return False if the metadata_type is the same as the inspected_type
+    # or None to allow the default implementation to compare these
+    # types. a return value of True means the two types do not
+    # match and should result in a type change operation.
+    return None
+
+
 def run_migrations_online():
     """Run migrations in 'online' mode.
 
@@ -75,7 +83,11 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=my_compare_type,
+        )
 
         with context.begin_transaction():
             context.run_migrations()
