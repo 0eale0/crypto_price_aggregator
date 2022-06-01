@@ -72,9 +72,9 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@router.on_event("startup")
-@repeat_every(seconds=int(300))
-async def update_db():
+# @router.on_event("startup")
+# @repeat_every(seconds=int(300))
+async def update_db() -> None:
     try:
         await crypto_api.update_coin_prices_in_db()
     except Exception as error:

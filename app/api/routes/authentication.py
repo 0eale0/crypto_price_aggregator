@@ -22,7 +22,7 @@ from app.api.services.db_services import (
 from app.models.schemas.tokens import Token
 from app.api.services import auth_helpers
 from app.api.services.db_services import authenticate_user
-from app.models.forms.users import RegistrationForm, ChangeDataForm, NameCryptoForm
+from app.models.forms.users import RegistrationForm, ChangeDataForm
 from app.models.domain.users import User
 
 router = APIRouter()
@@ -40,6 +40,9 @@ oauth.register(
 
 @router.post("/register")
 async def register(form: RegistrationForm, db: Session = Depends(get_session)):
+    """
+    Registers a new user.
+    """
     try:
         user = create_new_user(form, db)
         return HTMLResponse(content="User is created", status_code=200)
@@ -59,8 +62,8 @@ async def login_via_google(request: Request):
 @router.get("/register")
 async def register_with_google(request: Request):
     """
-    :param request:
-    :return:
+    Redirects to Google auth page.\n
+    Takes user`s credentials from his Google account and put them in DB\n
     """
     redirect_uri = request.url_for("auth")
     return await oauth.google.authorize_redirect(request, redirect_uri)
@@ -129,19 +132,22 @@ async def change_data(
     db: Session = Depends(get_session),
     user: User = Depends(get_current_active_user),
 ):
+    """
+    Page of changing user`s credentials.
+    param: db: DB connection
+    param: user: current_user(JWT token)
+    """
     try:
-        if user:
-            changed_user = change_user(user, form, db)
-            return changed_user
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authorized",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        changed_user = change_user(user, form, db)
+        return changed_user
     except Exception as e:
         return str(e)
 
 
 @router.get("/home_page")
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
+    """
+    Main page. Shows just user`s credentials.\n
+    param: current_user: JWT token in Authorization header.
+    """
     return current_user

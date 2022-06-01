@@ -1,6 +1,10 @@
 import pytest
 
-from app.api.services.auth_helpers import verify_password, get_password_hash
+from app.api.services.auth_helpers import (
+    verify_password,
+    get_password_hash,
+    create_access_token,
+)
 
 
 @pytest.mark.parametrize(
@@ -29,11 +33,18 @@ def test_true_false_verify_password(input_data, output_data, expected):
 
 @pytest.mark.parametrize(
     "input_data",
-    [
-        ("456768798"),
-        ("768909"),
-        ("string"),
-    ],
+    ["456768798", "768909", "string"],
 )
 def test_get_password_hash(input_data):
     assert isinstance(get_password_hash(input_data), str) is True
+
+
+@pytest.mark.parametrize(
+    "input_username, input_password",
+    [("username_1", "122847"), ("username_2", "768909"), ("username_3", "string")],
+)
+def test_create_access_token(input_username, input_password):
+    x = create_access_token(
+        data={"username": input_username, "password": input_password}
+    )
+    assert isinstance(x, str) is True

@@ -2,6 +2,7 @@ from app.models.domain.users import engine
 from fastapi import Depends
 from sqlalchemy.engine.base import Connection
 from app.models.forms.users import DollarsMaxAmount
+from typing import Union, List, Dict
 
 
 def get_connection() -> Connection:
@@ -9,7 +10,7 @@ def get_connection() -> Connection:
     return conn
 
 
-def get_recommendations(form: DollarsMaxAmount) -> list | str:
+def get_recommendations(form: DollarsMaxAmount) -> Union[List[Dict], str]:
     conn = get_connection()
     q = (
         "select"
@@ -27,7 +28,7 @@ def get_recommendations(form: DollarsMaxAmount) -> list | str:
         return str(e)
 
 
-def get_aggregated_prices(query: str) -> list | Exception:
+def get_aggregated_prices(query: str) -> Union[List[Dict], Exception]:
     conn = get_connection()
     try:
         aggregated_prices = conn.execute(query)
@@ -36,7 +37,7 @@ def get_aggregated_prices(query: str) -> list | Exception:
         return e
 
 
-def get_symbol_avg_price_by_day(symbol: str) -> list | Exception:
+def get_symbol_avg_price_by_day(symbol: str) -> Union[List[Dict], Exception]:
     conn = get_connection()
     avg_prices_by_day = (
         "select"
@@ -54,7 +55,7 @@ def get_symbol_avg_price_by_day(symbol: str) -> list | Exception:
         return e
 
 
-def get_standard_deviations(symbol: str):
+def get_standard_deviations(symbol: str) -> Union[List[Dict], str]:
     conn = get_connection()
     std_devs = (
         "select "

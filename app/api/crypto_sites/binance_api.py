@@ -1,6 +1,7 @@
 from app.api.crypto_sites.base_classes import CryptoSiteApi
 import aiohttp
 import asyncio
+from typing import Dict, Union
 
 
 class BinanceAPI(CryptoSiteApi):
@@ -8,7 +9,7 @@ class BinanceAPI(CryptoSiteApi):
 
     async def get_coin_price_from_api(
         self, symbol: str
-    ) -> dict[str, str | float] | None:
+    ) -> Union[Dict[str, float], None]:  # pragma: no cover
         """
         It connects to binance_api and receives json,
         from which it extracts information about each coin (symbol and price)
@@ -20,7 +21,7 @@ class BinanceAPI(CryptoSiteApi):
             async with aiohttp.ClientSession() as session:
                 url = "https://api.binance.com/"
                 async with session.get(
-                    url + f"api/v3/ticker/price?symbol={symbol.upper()}USDT"
+                    url + f"api/v3/ticker/price?symbol={symbol.upper()}USDT", ssl=False
                 ) as response:
                     payload = await response.json()
                     coin_info = {"symbol": symbol, "price": float(payload["price"])}
@@ -29,7 +30,7 @@ class BinanceAPI(CryptoSiteApi):
             return
 
 
-async def main():
+async def main():  # pragma: no cover
     binance = BinanceAPI()
     return await binance.get_coin_prices_from_api()
 

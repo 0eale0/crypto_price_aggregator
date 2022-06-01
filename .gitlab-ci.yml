@@ -2,13 +2,41 @@ image: python:3.10
 
 stages:
   - lint
+  - test
+  - deploy
 
-before_script:
-  - pip install poetry==1.1.11
-  - poetry config virtualenvs.create false
-  - poetry install
+#before_script:
+#  - pip install poetry==1.1.11
+#  - poetry config virtualenvs.create false
+#  - poetry install
 
 lint:
   stage: lint
+  before_script: []
   script:
+    - pip install black=22.3.0
     - black . --check --diff
+
+pytest:
+  stage: test
+  before_script: []
+  script:
+    - pip install pytest pytest-cov
+    - coverage run -m pytest
+    - coverage report
+    - coverage xml
+  coverage: '/TOTAL.*\s([.\d]+)%/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+deploy:
+  stage: deploy
+  script:
+    # Скрипт сборки указан внутри системы и
+    # никаких дополнительных настроек не требуется
+    - echo
+  only:
+    - main
