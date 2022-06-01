@@ -21,7 +21,7 @@ class BinanceAPI(CryptoSiteApi):
             async with aiohttp.ClientSession() as session:
                 url = "https://api.binance.com/"
                 async with session.get(
-                    url + f"api/v3/ticker/price?symbol={symbol.upper()}USDT"
+                    url + f"api/v3/ticker/price?symbol={symbol.upper()}USDT", ssl=False
                 ) as response:
                     payload = await response.json()
                     coin_info = {"symbol": symbol, "price": float(payload["price"])}

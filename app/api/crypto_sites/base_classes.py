@@ -141,6 +141,7 @@ class CryptoSiteApi(CryptoSiteApiInterface):
                 if not coin_from_db:
                     coin["name"] = coin["name"].lower()
                     coin_description = await get_coin_description(coin["name"])
+                    print(coin_description)
                     coin["crypto_info"] = coin_description
 
                     values_to_write_into_cryptocurrency_db = [

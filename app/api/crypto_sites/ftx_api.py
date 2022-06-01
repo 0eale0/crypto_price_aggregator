@@ -21,7 +21,7 @@ class FTXApi(CryptoSiteApi):  # pragma: no cover
         try:
             async with aiohttp.ClientSession() as session:
                 url = "https://ftx.com/api/markets/"
-                async with session.get(url + f"{symbol}/USDT") as response:
+                async with session.get(url + f"{symbol}/USDT", ssl=False) as response:
                     json = await response.json()
                     result = json["result"]
                     coin_info = {"symbol": symbol, "price": result["price"]}

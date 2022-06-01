@@ -22,7 +22,7 @@ class KucoinAPI(CryptoSiteApi):  # pragma: no cover
                 url = "https://api.kucoin.com"
                 async with session.get(
                     url
-                    + f"/api/v1/market/orderbook/level1?symbol={symbol.upper()}-USDT"
+                    + f"/api/v1/market/orderbook/level1?symbol={symbol.upper()}-USDT", ssl=False
                 ) as response:
                     json = await response.json()
                     data = json["data"]
@@ -31,7 +31,8 @@ class KucoinAPI(CryptoSiteApi):  # pragma: no cover
                         "price": float(data["price"]),
                     }
                     return coin_info
-        except Exception:
+        except Exception as error:
+            print(error)
             return
 
 
